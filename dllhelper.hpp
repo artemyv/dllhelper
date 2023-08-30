@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <windows.h>
+#include <stdexcept>
 
 class ProcPtr {
 public:
@@ -18,7 +19,11 @@ private:
 
 class DllHelper {
 public:
-  explicit DllHelper(LPCTSTR filename) : _module(LoadLibrary(filename)) {}
+  explicit DllHelper(LPCTSTR filename) : _module(LoadLibrary(filename)) {
+    if (NULL == _module) {
+      throw std::runtime_error("Library not loaded");
+    }
+  }
 
   ~DllHelper() { FreeLibrary(_module); }
 
