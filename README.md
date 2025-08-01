@@ -4,16 +4,21 @@ How to GetProcAddress like a boss 😎
 Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
 
 ```c++
+#include "dllhelper.hpp"
+#include <shellapi.h>
+
 class ShellApi {
-  DllHelper _dll{"Shell32.dll"};
+  DllHelper m_dll{L"Shell32.dll"};
 
 public:
-  decltype(ShellAboutA) *shellAbout = _dll["ShellAboutA"];
+  operator bool() const noexcept {return m_dll && shellAbout != nullptr;}
+  decltype(ShellAboutW) *shellAbout = m_dll["ShellAboutW"];
 };
 
 int main() {
   ShellApi shellApi;
-  shellApi.shellAbout(NULL, "hello", "world", NULL);
+  if(shellApi)
+    shellApi.shellAbout(NULL, L"hello", L"world", NULL);
 }
 ```
 
