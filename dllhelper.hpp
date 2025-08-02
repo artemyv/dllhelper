@@ -3,17 +3,17 @@
 #include <type_traits>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
+#include <cstring> //for memcpy
 class ProcPtr {
 public:
   explicit ProcPtr(FARPROC ptr) noexcept : _ptr(ptr) {}
 
   template <typename T, typename = std::enable_if_t<std::is_function_v<T>>>
   operator T *() const noexcept {
-#pragma warning(push)
-#pragma warning(disable : 26490) 
-    return reinterpret_cast<T *>(_ptr);
-#pragma warning(pop)
+      T* func = nullptr;
+      static_assert(sizeof(func) == sizeof(_ptr), "Pointer sizes must match");
+      std::memcpy(&func, &_ptr, sizeof(func));
+      return func;
   }
 
 private:
