@@ -7,9 +7,9 @@
 
 class ProcPtr {
 public:
-  explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
+  constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
 
-  template <typename T, typename = std::enable_if_t<std::is_function_v<T>>>
+  template <typename T, typename = std::enable_if_t<std::is_function_v<T> && !std::is_member_function_pointer_v<T*>>>
   operator T *() const noexcept {
       T* func = nullptr;
       static_assert(sizeof(func) == sizeof(_ptr), "Pointer sizes must match");
@@ -42,7 +42,7 @@ public:
         std::swap(_module, temp._module);
         return *this;
     }
-    operator bool() const noexcept
+    constexpr operator bool() const noexcept
     {
         return _module != nullptr;
     }
