@@ -3,6 +3,8 @@
 #include <type_traits>
 #include <cstring> //for memcpy
 #include <filesystem>
+#include <system_error>
+
 class ProcPtr {
 public:
   explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
@@ -44,12 +46,16 @@ public:
     {
         return _module != nullptr;
     }
-    ProcPtr operator[](const char* proc_name) const noexcept
+    ProcPtr operator[](const char* proc_name) noexcept
     {
         return ProcPtr(GetProcAddr(proc_name));
     }
-
+    std::error_code error_code() const noexcept
+    {
+        return m_ec;
+	}
 private:
-    void* GetProcAddr(const char* proc_name) const noexcept;
+    void* GetProcAddr(const char* proc_name) noexcept;
     void* _module = nullptr;
+    std::error_code m_ec;
 };
