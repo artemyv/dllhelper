@@ -54,8 +54,18 @@ public:
     {
         return m_ec;
 	}
+    std::string error_message() const noexcept
+    {
+        if(error_message().empty())
+        {
+            return m_ec.message();
+		}
+        return m_error_message;
+    }
+
 private:
     void* GetProcAddr(const char* proc_name) noexcept;
     void* _module = nullptr;
     std::error_code m_ec;
+	std::string m_error_message;
 };
