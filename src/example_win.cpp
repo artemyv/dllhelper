@@ -1,4 +1,5 @@
 #include <dllhelper.hpp>
+#include <windows.h>
 #include <shellapi.h>
 
 class ShellApi {
