@@ -56,7 +56,7 @@ public:
 	}
     std::string error_message() const noexcept
     {
-        if(error_message().empty())
+        if(m_error_message.empty())
         {
             return m_ec.message();
 		}
