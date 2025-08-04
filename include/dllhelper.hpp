@@ -4,17 +4,16 @@
 #include <cstring> //for memcpy
 #include <filesystem>
 #include <system_error>
+#include <bit>
 
 class ProcPtr {
 public:
   constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
 
   template <typename T, typename = std::enable_if_t<std::is_function_v<T> && !std::is_member_function_pointer_v<T*>>>
-  operator T *() const noexcept {
-      T* func = nullptr;
-      static_assert(sizeof(func) == sizeof(_ptr), "Pointer sizes must match");
-      std::memcpy(&func, &_ptr, sizeof(func));
-      return func;
+  constexpr operator T *() const noexcept {
+      static_assert(sizeof(T*) == sizeof(_ptr), "Pointer sizes must match");
+      return std::bit_cast<T*>(_ptr);;
   }
 
 private:
@@ -30,18 +29,9 @@ public:
     DllHelper() = delete;
     DllHelper(const DllHelper&) = delete; // Copy constructor
     DllHelper& operator=(const DllHelper&) = delete; // Copy assignment
-    DllHelper(DllHelper&& other) noexcept
-    {
-        std::swap(_module, other._module);
-    }
-    ; // Move constructor
-    DllHelper& operator=(DllHelper&& other) noexcept// Move assignment
-    {
-        DllHelper temp(std::move(other));
-
-        std::swap(_module, temp._module);
-        return *this;
-    }
+    DllHelper(DllHelper&& other) = delete; // Move constructor
+    DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
+    
     constexpr operator bool() const noexcept
     {
         return _module != nullptr;
@@ -50,11 +40,11 @@ public:
     {
         return ProcPtr(GetProcAddr(proc_name));
     }
-    std::error_code error_code() const noexcept
+    constexpr const std::error_code& error_code() const noexcept
     {
         return m_ec;
 	}
-    std::string error_message() const noexcept
+    constexpr std::string error_message() const noexcept
     {
         if(m_error_message.empty())
         {
