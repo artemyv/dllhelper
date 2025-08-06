@@ -10,10 +10,12 @@ class ProcPtr {
 public:
   constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
 
-  template <typename T, typename = std::enable_if_t<std::is_function_v<T> && !std::is_member_function_pointer_v<T*>>>
-  constexpr operator T *() const noexcept {
+  template <typename T>
+      requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
+  constexpr operator T* () const noexcept
+  {
       static_assert(sizeof(T*) == sizeof(_ptr), "Pointer sizes must match");
-      return std::bit_cast<T*>(_ptr);;
+      return std::bit_cast<T*>(_ptr);
   }
 
 private:
