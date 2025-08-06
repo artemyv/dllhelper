@@ -6,6 +6,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(FetchContent)
+
+# Download and make GTest available
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 set(LIB_SOURCES)
 if(WIN32)
     list(APPEND LIB_SOURCES src/dll_helper_win.cpp)
@@ -46,7 +58,36 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     target_include_directories(example_in_cpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
     # Link example_in_cpp with dllhelper static library
     target_link_libraries(example_in_cpp PRIVATE dllhelper)
+    enable_testing()
+
+    # Add a new UT project using GTest
+    add_executable(dllhelper_ut
+        test/dllhelper.ut.cpp
+        test/dll_helper_mock.cpp
+    )
+
+    # Link GTest and the necessary libraries
+    target_link_libraries(dllhelper_ut
+        PRIVATE
+            gtest
+            gtest_main
+    )
+    target_include_directories(dllhelper_ut 
+        PRIVATE 
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+    )
+
+    # Add GTest discovery for CTest
+    include(GoogleTest)
+    gtest_discover_tests(dllhelper_ut)
+
+    add_custom_target(run_tests ALL
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        DEPENDS dllhelper_ut
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
 endif()
+
 
 INSTALL(TARGETS dllhelper 
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
