@@ -1,7 +1,6 @@
 #pragma once
 
 #include <type_traits>
-#include <cstring> //for memcpy
 #include <filesystem>
 #include <system_error>
 #include <bit>
@@ -14,7 +13,6 @@ public:
       requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
   [[nodiscard]] constexpr operator T* () const noexcept
   {
-      static_assert(sizeof(T*) == sizeof(_ptr), "Pointer sizes must match");
       return std::bit_cast<T*>(_ptr);
   }
 
@@ -28,7 +26,7 @@ public:
     [[nodiscard]] explicit DllHelper(const std::filesystem::path& filename): _module(LoadLibraryInternal(filename))
     {
     }
-
+	explicit DllHelper(auto p) = delete; // Prevent implicit conversion from other types
     ~DllHelper() { FreeLibraryInternal(); }
 
     DllHelper() = delete;
@@ -37,12 +35,8 @@ public:
     DllHelper(DllHelper&& other) = delete; // Move constructor
     DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
     
-    [[nodiscard]] ProcPtr operator[](const char* proc_name)
+    [[nodiscard]] ProcPtr operator[](gsl::not_null<const char*> proc_name)
     {
-        if( proc_name == nullptr) {
-            throw std::system_error(std::make_error_code(std::errc::invalid_argument));
-        }
-
         return GetProcAddr(proc_name);
     }
 
