@@ -2,27 +2,38 @@
 #include <iostream>
 #include <cmath>
 
-class MathLib {
-    DllHelper m_dll{"libm.so.6"};
-
-public:
-    // Function pointer type for cos(double)
-    using cos_func_t =decltype(cos);
-    cos_func_t* cos_func = m_dll["cos"];
-
-    constexpr operator bool() const noexcept { return m_dll && cos_func != nullptr; }
-    std::string error_message() const {
-        return m_dll.error_message();
-	}
-};
-
 int main() {
-    MathLib mathLib;
-    if (mathLib) {
+    try
+    {
+        DllHelper m_dll{"libm.so.6"};
+        using cos_func_t = decltype(cos);
+        cos_func_t* cos_func = m_dll["cos"];
+
         double value = 0.0;
-        double result = mathLib.cos_func(value);
+        double result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << std::endl;
-    } else {
-        std::cerr << "Failed: " << mathLib.error_message() << std::endl;
+    } 
+    catch(const std::runtime_error& ex)
+    {
+        std::cerr << "Failed: " << ex.what() << std::endl;
+    }
+
+	//Error handling examples
+
+    try {
+        DllHelper m_dll{"libm.so.125"};
+    }
+    catch(const std::runtime_error& ex) {
+        std::cerr << "Failed: " << ex.what() << std::endl;
+    }
+
+    try {
+        DllHelper m_dll{"libm.so.6"};
+        using cos_func_t = decltype(cos);
+        [[maybe_unused]]cos_func_t* cos_func = m_dll["coscoco"];
+
+    }
+    catch(const std::runtime_error& ex) {
+        std::cerr << "Failed: " << ex.what() << std::endl;
     }
 }

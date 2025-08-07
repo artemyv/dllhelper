@@ -3,29 +3,27 @@
 
 #include <dllhelper.hpp>
 
-DllHelper::~DllHelper() { FreeLibrary(static_cast<HMODULE>(_module)); }
-
-DllHelper::DllHelper(const std::filesystem::path& filename) noexcept: _module(LoadLibraryW(filename.c_str()))
+void DllHelper::FreeLibraryInternal() noexcept
 {
-    if(_module == nullptr) {
-        // I'm not bothering with parsing GetLastError() here.
-        // Who get with such an API?
-        m_ec = std::error_code(::GetLastError(), std::system_category());
-	}
-
+    FreeLibrary(static_cast<HMODULE>(_module.get())); 
 }
-void* DllHelper::GetProcAddr(const char* proc_name) noexcept
+
+gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
-    if(_module == nullptr)
-		return nullptr;
-    const auto res = GetProcAddress(static_cast<HMODULE>(_module), proc_name);
-    if (res == nullptr) {
+    const auto result = LoadLibraryW(filename.c_str());
+    if(result == nullptr) {
         // I'm not bothering with parsing GetLastError() here.
         // Who get with such an API?
-        m_ec = std::error_code(::GetLastError(), std::system_category());
+        throw std::system_error( std::error_code(::GetLastError(), std::system_category()), std::format("Failed to load {}", filename.string()));
 	}
-    else {
-		m_ec = std::error_code(); // Clear error code on success
-    }
-    return res;
+    return result;
+}
+ProcPtr DllHelper::GetProcAddr(gsl::not_null<const char*> proc_name)
+{
+
+    const auto res = GetProcAddress(static_cast<HMODULE>(_module.get()), proc_name);
+    if (res == nullptr) {
+        throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Function {} not found", proc_name.get()));
+	}
+    return ProcPtr(res);
 }

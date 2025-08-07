@@ -18,6 +18,13 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+FetchContent_Declare(
+    GSL
+    GIT_REPOSITORY https://github.com/microsoft/GSL.git
+    GIT_TAG        v4.2.0 # or a commit hash or branch
+)
+FetchContent_MakeAvailable(GSL)
+
 set(LIB_SOURCES)
 if(WIN32)
     list(APPEND LIB_SOURCES src/dll_helper_win.cpp)
@@ -32,6 +39,7 @@ add_library(dllhelper STATIC
 target_include_directories(dllhelper 
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${gsl_SOURCE_DIR}/include
 )
 set_target_properties(dllhelper PROPERTIES 
     PUBLIC_HEADER "include/dllhelper.hpp"
@@ -75,6 +83,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     target_include_directories(dllhelper_ut 
         PRIVATE 
             ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${gsl_SOURCE_DIR}/include
     )
 
     # Add GTest discovery for CTest

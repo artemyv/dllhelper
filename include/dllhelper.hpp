@@ -5,14 +5,14 @@
 #include <filesystem>
 #include <system_error>
 #include <bit>
-
+#include <gsl/pointers> // for gsl::not_null
 class ProcPtr {
 public:
   constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
 
   template <typename T>
       requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
-  constexpr operator T* () const noexcept
+  [[nodiscard]] constexpr operator T* () const noexcept
   {
       static_assert(sizeof(T*) == sizeof(_ptr), "Pointer sizes must match");
       return std::bit_cast<T*>(_ptr);
@@ -25,39 +25,31 @@ private:
 class DllHelper
 {
 public:
-    explicit DllHelper(const std::filesystem::path& filename) noexcept;
+    [[nodiscard]] explicit DllHelper(const std::filesystem::path& filename): _module(LoadLibraryInternal(filename))
+    {
+    }
 
-    ~DllHelper();
+    ~DllHelper() { FreeLibraryInternal(); }
+
     DllHelper() = delete;
     DllHelper(const DllHelper&) = delete; // Copy constructor
     DllHelper& operator=(const DllHelper&) = delete; // Copy assignment
     DllHelper(DllHelper&& other) = delete; // Move constructor
     DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
     
-    constexpr operator bool() const noexcept
+    [[nodiscard]] ProcPtr operator[](const char* proc_name)
     {
-        return _module != nullptr;
-    }
-    ProcPtr operator[](const char* proc_name) noexcept
-    {
-        return ProcPtr(GetProcAddr(proc_name));
-    }
-    constexpr const std::error_code& error_code() const noexcept
-    {
-        return m_ec;
-	}
-    constexpr std::string error_message() const noexcept
-    {
-        if(m_error_message.empty())
-        {
-            return m_ec.message();
-		}
-        return m_error_message;
+        if( proc_name == nullptr) {
+            throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+        }
+
+        return GetProcAddr(proc_name);
     }
 
 private:
-    void* GetProcAddr(const char* proc_name) noexcept;
-    void* _module = nullptr;
-    std::error_code m_ec;
-	std::string m_error_message;
+    static gsl::not_null<void*> LoadLibraryInternal(const std::filesystem::path& filename);
+    ProcPtr GetProcAddr(gsl::not_null<const char*> proc_name) ;
+    void FreeLibraryInternal() noexcept;
+
+    gsl::not_null<void*> _module;
 };
