@@ -18,7 +18,7 @@ gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path&
 	}
     return result;
 }
-ProcPtr DllHelper::GetProcAddr(gsl::not_null<const char*> proc_name)
+DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {
 
     const auto res = GetProcAddress(static_cast<HMODULE>(_module.get()), proc_name);

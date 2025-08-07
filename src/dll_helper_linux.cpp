@@ -14,7 +14,7 @@ gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path&
     }
     throw std::runtime_error( dlerror());
 }
-ProcPtr DllHelper::GetProcAddr(gsl::not_null<const char*> proc_name)
+DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {
     const auto res = dlsym(_module, proc_name);
     if(res)

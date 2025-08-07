@@ -5,20 +5,7 @@
 #include <system_error>
 #include <bit>
 #include <gsl/pointers> // for gsl::not_null
-class ProcPtr {
-public:
-  constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
-
-  template <typename T>
-      requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
-  [[nodiscard]] constexpr operator T* () const noexcept
-  {
-      return std::bit_cast<T*>(_ptr);
-  }
-
-private:
-  void* _ptr;
-};
+#include <gsl/zstring>
 
 class DllHelper
 {
@@ -35,14 +22,30 @@ public:
     DllHelper(DllHelper&& other) = delete; // Move constructor
     DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
     
-    [[nodiscard]] ProcPtr operator[](gsl::not_null<const char*> proc_name)
+    class ProcPtr
+    {
+    public:
+        constexpr explicit ProcPtr(gsl::not_null<void*> ptr) noexcept: _ptr(ptr) {}
+
+        template <typename T>
+            requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
+        [[nodiscard]] constexpr operator T* () const noexcept
+        {
+            return std::bit_cast<T*>(_ptr);
+        }
+
+    private:
+        gsl::not_null<void*> _ptr;
+    };
+
+    [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name)
     {
         return GetProcAddr(proc_name);
     }
 
 private:
     static gsl::not_null<void*> LoadLibraryInternal(const std::filesystem::path& filename);
-    ProcPtr GetProcAddr(gsl::not_null<const char*> proc_name) ;
+    ProcPtr GetProcAddr(gsl::not_null<gsl::czstring> proc_name) ;
     void FreeLibraryInternal() noexcept;
 
     gsl::not_null<void*> _module;
