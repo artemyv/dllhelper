@@ -28,6 +28,10 @@ int main() {
 
 And now we can same in linux
 ```c++
+#include <dllhelper.hpp>
+#include <iostream>
+#include <cmath>
+
 int main() {
     using std::filesystem::path;
     try
