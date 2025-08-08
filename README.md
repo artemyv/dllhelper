@@ -8,8 +8,9 @@ Possible modifications - is to move bitcast to the library code making the heade
 C++17 friendly. Library itself should still be compiled using c++20.
 
 Also header is depending on [gsl library](https://github.com/microsoft/GSL.git), 
-using gsl::not_null<void*> and gsl::not_null<gsl::czstring>. First can be replaced 
-with void* and second one with const char* if this dependency is not acceptable.
+using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. First can be 
+replaced with `void*` and second one with `const char*` if this dependency is not 
+acceptable.
 
 ```c++
 #include <dllhelper.hpp>
