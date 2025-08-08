@@ -41,7 +41,7 @@ namespace dll
 
             template<typename T>
                 requires (std::is_function_v<T>)
-            [[nodiscard]] operator Fp<T> () const noexcept
+            [[nodiscard]] operator Fp<T>() const noexcept
             {
                 return Fp<T>(_module, _ptr.get());
             }
@@ -56,7 +56,7 @@ namespace dll
             if(!_module) {
                 throw std::runtime_error("DLL not loaded");
             }
-            return ProcPtr(_module,GetProcAddr(proc_name));
+            return ProcPtr(_module, GetProcAddr(proc_name));
         }
 
     private:

@@ -10,6 +10,7 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
     }
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
 }
+
 gsl::not_null<void*> dll::Helper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {
     if(std::string_view(proc_name) == "mock_function") {

@@ -14,12 +14,12 @@ TEST(DllHelperTest, MissingMethod)
 {
     dll::Helper mockDll(path("success"));
     using fp = int();
-    EXPECT_THROW({[[maybe_unused]] dll::Fp<fp> func = mockDll["mock_not_function"];}, std::runtime_error);
+    EXPECT_THROW({[[maybe_unused]] dll::Fp<fp> func = mockDll["mock_not_function"]; }, std::runtime_error);
 }
 
 TEST(DllHelperTest, MissingLib)
 {
-    EXPECT_THROW({dll::Helper mockDll(path("failure"));}, std::runtime_error);
+    EXPECT_THROW({dll::Helper mockDll(path("failure")); }, std::runtime_error);
 }
 
 TEST(DllHelperTest, ShouldNotCompile)
@@ -30,6 +30,7 @@ TEST(DllHelperTest, ShouldNotCompile)
     //dll::Fp<fp> func = mockDll["mock_function"];
     //func();
 }
+
 TEST(DllHelperTest, ShouldNotCompile2)
 {
     dll::Helper mockDll(path("success"));
@@ -41,6 +42,6 @@ TEST(DllHelperTest, ShouldNotCompile2)
         }
     };
 
-    //dll::Fp<decltype(foo::bar)> func = mockDll["mock_function"];
+    //dll::Fp<decltype(&foo::bar)> func = mockDll["mock_function"];
     //func(foo{});
 }
