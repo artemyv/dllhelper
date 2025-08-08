@@ -6,11 +6,11 @@ int main() {
     using std::filesystem::path;
     try
     {
-        DllHelper m_dll{path("libm.so.6")};
-        auto cos_func = m_dll["cos"];
+        dll::Helper a_dll{path("libm.so.6")};
+        dll::Fp<decltype(cos)> cos_func = a_dll["cos"];
 
         double value = 0.0;
-        double result = cos_func.invoke<decltype(cos)>(value);
+        double result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << std::endl;
     } 
     catch(const std::runtime_error& ex)
@@ -21,15 +21,15 @@ int main() {
 	//Error handling examples
 
     try {
-        DllHelper m_dll{path("libm.so.125")};
+        dll::Helper m_dll{path("libm.so.125")};
     }
     catch(const std::runtime_error& ex) {
         std::cerr << "Failed: " << ex.what() << std::endl;
     }
 
     try {
-        DllHelper m_dll{path("libm.so.6")};
-        [[maybe_unused]]auto cos_func = m_dll["coscoco"];
+        dll::Helper m_dll{path("libm.so.6")};
+        [[maybe_unused]] dll::Fp<decltype(cos)> cos_func = m_dll["coscoco"];
     }
     catch(const std::runtime_error& ex) {
         std::cerr << "Failed: " << ex.what() << std::endl;

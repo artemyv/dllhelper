@@ -4,34 +4,35 @@
 using std::filesystem::path;
 TEST(DllHelperTest, Positive)
 {
-    DllHelper mockDll(path("success"));
+    dll::Helper mockDll(path("success"));
     using fp = int();
-    auto func = mockDll["mock_function"];
-    EXPECT_EQ(func.invoke<fp>(), 42);
+    dll::Fp<fp> func = mockDll["mock_function"];
+    EXPECT_EQ(func(), 42);
 }
 
 TEST(DllHelperTest, MissingMethod)
 {
-    DllHelper mockDll(path("success"));
-    EXPECT_THROW({[[maybe_unused]] auto func = mockDll["mock_not_function"];}, std::runtime_error);
+    dll::Helper mockDll(path("success"));
+    using fp = int();
+    EXPECT_THROW({[[maybe_unused]] dll::Fp<fp> func = mockDll["mock_not_function"];}, std::runtime_error);
 }
 
 TEST(DllHelperTest, MissingLib)
 {
-    EXPECT_THROW({DllHelper mockDll(path("failure"));}, std::runtime_error);
+    EXPECT_THROW({dll::Helper mockDll(path("failure"));}, std::runtime_error);
 }
 
 TEST(DllHelperTest, ShouldNotCompile)
 {
-    DllHelper mockDll(path("success"));
+    dll::Helper mockDll(path("success"));
     using fp = int*;
-	auto func = mockDll["mock_function"]; 
     //this should not compile
-   // func.invoke<fp>();
+    //dll::Fp<fp> func = mockDll["mock_function"];
+    //func();
 }
 TEST(DllHelperTest, ShouldNotCompile2)
 {
-    DllHelper mockDll(path("success"));
+    dll::Helper mockDll(path("success"));
     struct  foo
     {
         int bar()
@@ -40,7 +41,6 @@ TEST(DllHelperTest, ShouldNotCompile2)
         }
     };
 
-    auto func = mockDll["mock_function"]; 
-    //this should not compile
-	//func.invoke<decltype(foo::bar)>();
+    //dll::Fp<decltype(foo::bar)> func = mockDll["mock_function"];
+    //func(foo{});
 }
