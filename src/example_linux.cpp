@@ -21,15 +21,15 @@ int main() {
 	//Error handling examples
 
     try {
-        dll::Helper m_dll{path("libm.so.125")};
+        dll::Helper a_dll{path("libm.so.125")};
     }
     catch(const std::runtime_error& ex) {
         std::cerr << "Failed: " << ex.what() << std::endl;
     }
 
     try {
-        dll::Helper m_dll{path("libm.so.6")};
-        [[maybe_unused]] dll::Fp<decltype(cos)> cos_func = m_dll["coscoco"];
+        dll::Helper a_dll{path("libm.so.6")};
+        [[maybe_unused]] dll::Fp<decltype(cos)> cos_func = a_dll["coscoco"];
     }
     catch(const std::runtime_error& ex) {
         std::cerr << "Failed: " << ex.what() << std::endl;

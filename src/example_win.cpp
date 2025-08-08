@@ -42,8 +42,8 @@ int main() {
 	//Error handling examples
 
 	try {
-		dll::Helper m_dll{path(L"Shell64.dll")};
-		const dll::Fp<decltype(ShellAboutW)> shellAbout = m_dll["ShellAboutW"];
+		dll::Helper a_dll{path(L"Shell64.dll")};
+		const dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutW"];
 
 		shellAbout(nullptr, L"hello", L"world", nullptr);
 	}
@@ -52,8 +52,8 @@ int main() {
 	}
 
 	try {
-		dll::Helper m_dll{path(L"Shell32.dll")};
-		const dll::Fp<decltype(ShellAboutW)> shellAbout = m_dll["ShellAboutX"];
+		dll::Helper a_dll{path(L"Shell32.dll")};
+		const dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutX"];
 
 		shellAbout(nullptr, L"hello", L"world", nullptr);
 	}

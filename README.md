@@ -2,6 +2,14 @@ How to GetProcAddress like a boss 😎
 ======
 
 Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
+Code requires using c++20 (for std::bit_cast and std::format features)
+
+Possible modifications - is to move bitcast to the library code making the header 
+C++17 friendly. Library itself should still be compiled using c++20.
+
+Also header is depending on [gsl library](https://github.com/microsoft/GSL.git), using gsl::not_null<void*> and
+gsl::not_null<gsl::czstring>. First can be replaced with void* and second one with
+const char* if this dependency is not acceptable.
 
 ```c++
 #include <dllhelper.hpp>
@@ -9,15 +17,36 @@ Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
 #include <shellapi.h>
 #include <iostream>
 
+class shellAbout
+{
+
+	public:
+		void invoke()
+		{
+			m_shellAbout(nullptr, L"hello", L"world", nullptr);
+		}
+private:
+	static dll::Fp<decltype(ShellAboutW)> createFuncPointer()
+	{
+		using std::filesystem::path;
+		dll::Helper a_dll{path(L"Shell32.dll")};
+		dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutW"];
+		return shellAbout;
+	}
+
+	// With new approach there is no need to store the dll::Helper object, 
+	// as it is not used after the function pointer is created.
+	// The function pointer will keep the module handle alive as long as it is used.
+	dll::Fp<decltype(ShellAboutW)> m_shellAbout{createFuncPointer()};
+
+};
 
 int main() {
 	using std::filesystem::path;
 	try
 	{
-		DllHelper m_dll{path(L"Shell32.dll")};
-		decltype(ShellAboutW)* shellAbout = m_dll["ShellAboutW"];
-
-		shellAbout(NULL, L"hello", L"world", NULL);
+		shellAbout test;
+		test.invoke();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -25,6 +54,7 @@ int main() {
 	}
 }
 ```
+See the [example_win.cpp](src/example_win.cpp) file for complete example.
 
 And now we can same in linux
 ```c++
@@ -36,9 +66,8 @@ int main() {
     using std::filesystem::path;
     try
     {
-        DllHelper m_dll{path("libm.so.6")};
-        using cos_func_t = decltype(cos);
-        cos_func_t* cos_func = m_dll["cos"];
+        dll::Helper a_dll{path("libm.so.6")};
+        dll::Fp<decltype(cos)> cos_func = a_dll["cos"];
 
         double value = 0.0;
         double result = cos_func(value);
@@ -50,5 +79,6 @@ int main() {
     }
 }
 ```
+See the [example_linux.cpp](src/example_linux.cpp) file for complete example.
 
 See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss)
