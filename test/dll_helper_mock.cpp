@@ -1,4 +1,5 @@
 #include <dllhelper.hpp>
+#include <system_error>
 
 void DllHelper::FreeLibraryInternal(void* /*libptr*/) noexcept
 {

@@ -2,7 +2,7 @@
 
 #include <type_traits>
 #include <filesystem>
-#include <system_error>
+#include <stdexcept>
 #include <bit>
 #include <memory>
 #include <gsl/pointers> // for gsl::not_null

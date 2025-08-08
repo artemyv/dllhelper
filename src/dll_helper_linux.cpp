@@ -1,5 +1,5 @@
-#include <dlfcn.h>
 #include <dllhelper.hpp>
+#include <dlfcn.h>
 
 void DllHelper::FreeLibraryInternal(void* libptr) noexcept
 {
