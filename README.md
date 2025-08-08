@@ -2,7 +2,7 @@ How to GetProcAddress like a boss 😎
 ======
 
 Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
-Code requires using c++20 (for std::bit_cast and std::format features)
+Code requires using c++20 (for `std::bit_cast` and `std::format` features)
 
 Possible modifications - is to move bitcast to the library code making the header 
 C++17 friendly. Library itself should still be compiled using c++20.
@@ -76,4 +76,6 @@ int main()
 ```
 See the [example_linux.cpp](src/example_linux.cpp) file for complete example.
 
-See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss)
+See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss) that 
+explains original idea of this library. Original code is located at 
+[bblanchon / dllhelper repository](https://github.com/bblanchon/dllhelper)
