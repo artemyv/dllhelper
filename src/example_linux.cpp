@@ -7,11 +7,10 @@ int main() {
     try
     {
         DllHelper m_dll{path("libm.so.6")};
-        using cos_func_t = decltype(cos);
-        cos_func_t* cos_func = m_dll["cos"];
+        auto cos_func = m_dll["cos"];
 
         double value = 0.0;
-        double result = cos_func(value);
+        double result = cos_func.invoke<decltype(cos)>(value);
         std::cout << "cos(" << value << ") = " << result << std::endl;
     } 
     catch(const std::runtime_error& ex)
@@ -30,9 +29,7 @@ int main() {
 
     try {
         DllHelper m_dll{path("libm.so.6")};
-        using cos_func_t = decltype(cos);
-        [[maybe_unused]]cos_func_t* cos_func = m_dll["coscoco"];
-
+        [[maybe_unused]]auto cos_func = m_dll["coscoco"];
     }
     catch(const std::runtime_error& ex) {
         std::cerr << "Failed: " << ex.what() << std::endl;

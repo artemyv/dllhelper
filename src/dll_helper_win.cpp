@@ -4,14 +4,6 @@
 #include <dllhelper.hpp>
 #include <system_error>
 
-void DllHelper::FreeLibraryInternal(void* libptr) noexcept
-{
-    if(libptr == nullptr) {
-        return; // Nothing to free
-	}
-    FreeLibrary(static_cast<HMODULE>(libptr));
-}
-
 DllHelper::lib_handle DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     const auto result = LoadLibraryW(filename.c_str());
@@ -20,7 +12,7 @@ DllHelper::lib_handle DllHelper::LoadLibraryInternal(const std::filesystem::path
         // Who get with such an API?
         throw std::system_error( std::error_code(::GetLastError(), std::system_category()), std::format("Failed to load {}", filename.string()));
 	}
-    return DllHelper::lib_handle(static_cast<void*>(result), &DllHelper::FreeLibraryInternal);
+    return DllHelper::lib_handle(static_cast<void*>(result), [](void* libptr) {::FreeLibrary(static_cast<HMODULE>(libptr)); });
 }
 DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {
@@ -29,5 +21,5 @@ DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name
     if (res == nullptr) {
         throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Function {} not found", proc_name.get()));
 	}
-    return ProcPtr(res);
+    return ProcPtr(_module, res);
 }

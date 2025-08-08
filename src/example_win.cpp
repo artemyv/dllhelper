@@ -9,9 +9,9 @@ int main() {
 	try
 	{
 		DllHelper m_dll{path(L"Shell32.dll")};
-		decltype(ShellAboutW)* shellAbout = m_dll["ShellAboutW"];
+		const auto shellAbout = m_dll["ShellAboutW"];
 
-		shellAbout(NULL, L"hello", L"world", NULL);
+		shellAbout.invoke<decltype(ShellAboutW)>(nullptr, L"hello", L"world", nullptr);
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -22,9 +22,9 @@ int main() {
 
 	try {
 		DllHelper m_dll{path(L"Shell64.dll")};
-		decltype(ShellAboutW)* shellAbout = m_dll["ShellAboutW"];
+		const auto shellAbout = m_dll["ShellAboutW"];
 
-		shellAbout(NULL, L"hello", L"world", NULL);
+		shellAbout.invoke<decltype(ShellAboutW)>(nullptr, L"hello", L"world", nullptr);
 	}
 	catch(const std::runtime_error& e) {
 		std::cerr << "Failed: " << e.what() << std::endl;
@@ -32,9 +32,9 @@ int main() {
 
 	try {
 		DllHelper m_dll{path(L"Shell32.dll")};
-		decltype(ShellAboutW)* shellAbout = m_dll["ShellAboutX"];
+		const auto shellAbout = m_dll["ShellAboutX"];
 
-		shellAbout(NULL, L"hello", L"world", NULL);
+		shellAbout.invoke<decltype(ShellAboutW)>(nullptr, L"hello", L"world", nullptr);
 	}
 	catch(const std::runtime_error& e) {
 		std::cerr << "Failed: " << e.what() << std::endl;

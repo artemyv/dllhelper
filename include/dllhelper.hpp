@@ -13,21 +13,24 @@ public:
     [[nodiscard]] explicit DllHelper(const std::filesystem::path& filename): _module(LoadLibraryInternal(filename))
     {
     }
-	explicit DllHelper(auto p) = delete; // Prevent implicit conversion from other types
 
+	explicit DllHelper(auto p) = delete; // Prevent implicit conversion from other types
+    using lib_handle = std::shared_ptr<void>;
     class ProcPtr
     {
     public:
-        [[nodiscard]] constexpr explicit ProcPtr(gsl::not_null<void*> ptr) noexcept: _ptr(ptr) {}
+        [[nodiscard]] explicit ProcPtr(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(ptr) {}
 
-        template <typename T>
+        template <typename T, typename ...Args>
             requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
-        [[nodiscard]] constexpr operator T* () const noexcept
+		auto invoke(Args&& ...args) const noexcept(std::is_nothrow_invocable_v<T, Args...>)
         {
-            return std::bit_cast<T*>(_ptr);
+            const auto f = std::bit_cast<T*>(_ptr);
+			return f(std::forward<Args>(args)...);
         }
 
     private:
+        lib_handle _module; // Keep the module handle alive as long as the ProcPtr exists
         gsl::not_null<void*> _ptr;
     };
 
@@ -40,8 +43,6 @@ public:
     }
 
 private:
-    static void FreeLibraryInternal(void*) noexcept;
-	using lib_handle = std::unique_ptr<void, decltype(&FreeLibraryInternal)>;
     [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
     [[nodiscard]] ProcPtr GetProcAddr(gsl::not_null<gsl::czstring> proc_name) ;
 
