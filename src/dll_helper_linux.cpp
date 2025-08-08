@@ -1,22 +1,22 @@
 #include <dlfcn.h>
 #include <dllhelper.hpp>
 
-void DllHelper::FreeLibraryInternal() noexcept
+void DllHelper::FreeLibraryInternal(void* libptr) noexcept
 {
-    dlclose(_module.get());
+    dlclose(libptr);
 }
 
-gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
+DllHelper::lib_handle DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     const auto res =  dlopen(filename.c_str(), RTLD_LAZY);
     if(res) {
-        return res;
+        return lib_handle(res, &DllHelper::FreeLibraryInternal);
     }
     throw std::runtime_error( dlerror());
 }
 DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {
-    const auto res = dlsym(_module, proc_name);
+    const auto res = dlsym(_module.get(), proc_name);
     if(res)
         return ProcPtr(res);
     throw std::runtime_error( dlerror());

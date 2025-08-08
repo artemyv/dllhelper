@@ -1,14 +1,14 @@
 #include <dllhelper.hpp>
 
-void DllHelper::FreeLibraryInternal() noexcept
+void DllHelper::FreeLibraryInternal(void* /*libptr*/) noexcept
 {
 }
 
-gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
+DllHelper::lib_handle DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     if(filename.string() == "success") {
         static int x;
-        return static_cast<void*>(&x);
+        return lib_handle(static_cast<void*>(&x), &DllHelper::FreeLibraryInternal);
     }
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
 }

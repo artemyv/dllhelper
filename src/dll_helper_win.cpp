@@ -3,12 +3,15 @@
 
 #include <dllhelper.hpp>
 
-void DllHelper::FreeLibraryInternal() noexcept
+void DllHelper::FreeLibraryInternal(void* libptr) noexcept
 {
-    FreeLibrary(static_cast<HMODULE>(_module.get())); 
+    if(libptr == nullptr) {
+        return; // Nothing to free
+	}
+    FreeLibrary(static_cast<HMODULE>(libptr));
 }
 
-gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
+DllHelper::lib_handle DllHelper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     const auto result = LoadLibraryW(filename.c_str());
     if(result == nullptr) {
@@ -16,7 +19,7 @@ gsl::not_null<void*> DllHelper::LoadLibraryInternal(const std::filesystem::path&
         // Who get with such an API?
         throw std::system_error( std::error_code(::GetLastError(), std::system_category()), std::format("Failed to load {}", filename.string()));
 	}
-    return result;
+    return DllHelper::lib_handle(static_cast<void*>(result), &DllHelper::FreeLibraryInternal);
 }
 DllHelper::ProcPtr DllHelper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
 {

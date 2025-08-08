@@ -4,9 +4,9 @@
 #include <filesystem>
 #include <system_error>
 #include <bit>
+#include <memory>
 #include <gsl/pointers> // for gsl::not_null
 #include <gsl/zstring>
-
 class DllHelper
 {
 public:
@@ -14,18 +14,11 @@ public:
     {
     }
 	explicit DllHelper(auto p) = delete; // Prevent implicit conversion from other types
-    ~DllHelper() { FreeLibraryInternal(); }
 
-    DllHelper() = delete;
-    DllHelper(const DllHelper&) = delete; // Copy constructor
-    DllHelper& operator=(const DllHelper&) = delete; // Copy assignment
-    DllHelper(DllHelper&& other) = delete; // Move constructor
-    DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
-    
     class ProcPtr
     {
     public:
-        constexpr explicit ProcPtr(gsl::not_null<void*> ptr) noexcept: _ptr(ptr) {}
+        [[nodiscard]] constexpr explicit ProcPtr(gsl::not_null<void*> ptr) noexcept: _ptr(ptr) {}
 
         template <typename T>
             requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
@@ -40,13 +33,17 @@ public:
 
     [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name)
     {
+        if(!_module) {
+            throw std::runtime_error("DLL not loaded");
+		}
         return GetProcAddr(proc_name);
     }
 
 private:
-    static gsl::not_null<void*> LoadLibraryInternal(const std::filesystem::path& filename);
-    ProcPtr GetProcAddr(gsl::not_null<gsl::czstring> proc_name) ;
-    void FreeLibraryInternal() noexcept;
+    static void FreeLibraryInternal(void*) noexcept;
+	using lib_handle = std::unique_ptr<void, decltype(&FreeLibraryInternal)>;
+    [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
+    [[nodiscard]] ProcPtr GetProcAddr(gsl::not_null<gsl::czstring> proc_name) ;
 
-    gsl::not_null<void*> _module;
+    lib_handle _module;
 };
