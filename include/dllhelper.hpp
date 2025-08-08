@@ -18,6 +18,7 @@ namespace dll
         [[nodiscard]] explicit Fp(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(std::bit_cast<T*>(ptr.get())) {}
 
         template <typename ...Args>
+			requires (std::is_invocable_v<T, Args...>)
         auto operator()(Args&& ...args) const noexcept(std::is_nothrow_invocable_v<T, Args...>)
         {
             return std::invoke(_ptr, std::forward<Args>(args)...);
