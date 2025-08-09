@@ -50,7 +50,7 @@ int main()
 	}
 }
 ```
-See the [example_win.cpp](src/example_win.cpp) file for complete example.
+See the [example_win.cpp](src/samples/example_win.cpp) file for complete example.
 
 And now we can same in linux
 ```c++
@@ -74,7 +74,7 @@ int main()
     }
 }
 ```
-See the [example_linux.cpp](src/example_linux.cpp) file for complete example.
+See the [example_linux.cpp](src/samples/example_linux.cpp) file for complete example.
 
 See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss) that 
 explains original idea of this library. Original code is located at 
