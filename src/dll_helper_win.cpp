@@ -6,7 +6,8 @@
 
 dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
-    const auto result = LoadLibraryW(filename.c_str());
+    static constexpr DWORD   dwFlags = LOAD_LIBRARY_SEARCH_SYSTEM32;
+    const auto result = LoadLibraryExW(filename.c_str(), nullptr, dwFlags);
     if(result == nullptr) {
         throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Failed to load {}", filename.string()));
     }
