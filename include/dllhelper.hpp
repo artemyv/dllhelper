@@ -54,7 +54,7 @@ namespace dll
             gsl::not_null<void*> _ptr;
         };
 
-        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name)
+        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name) const 
         {
             if(!_module) {
                 throw std::runtime_error("DLL not loaded");
@@ -64,7 +64,7 @@ namespace dll
 
     private:
         [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
-        [[nodiscard]] gsl::not_null<void*> GetProcAddr(gsl::not_null<gsl::czstring> proc_name);
+        [[nodiscard]] gsl::not_null<void*> GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const;
 
         lib_handle _module;
     };

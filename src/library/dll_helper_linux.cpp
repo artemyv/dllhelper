@@ -10,7 +10,7 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
     throw std::runtime_error(dlerror());
 }
 
-gsl::not_null<void*> dll::Helper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name)
+gsl::not_null<void*> dll::Helper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const
 {
     const auto res = dlsym(_module.get(), proc_name);
     if(res)
