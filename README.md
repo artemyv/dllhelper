@@ -2,10 +2,7 @@ How to GetProcAddress like a boss 😎
 ======
 
 Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
-Code requires using c++20 (for `std::bit_cast` and `std::format` features)
-
-Possible modifications - is to move bitcast to the library code making the header 
-C++17 friendly. Library itself should still be compiled using c++20.
+Code is using c++20.
 
 Also header is depending on [gsl library](https://github.com/microsoft/GSL.git), 
 using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. First can be 

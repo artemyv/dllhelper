@@ -1,6 +1,6 @@
 #pragma once
 
-#include <type_traits>
+#include <concepts>
 #include <filesystem>
 #include <stdexcept>
 #include <bit>
@@ -9,9 +9,11 @@
 #include <gsl/zstring>
 namespace dll
 {
+	template<typename T>
+	concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
+
     using lib_handle = std::shared_ptr<void>;
-    template<typename T>
-        requires (std::is_function_v<T>)
+    template<func T>
     class Fp
     {
     public:
