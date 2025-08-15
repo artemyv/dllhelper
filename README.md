@@ -2,31 +2,52 @@ How to GetProcAddress like a boss 😎
 ======
 
 Demonstrates how to leverage modern C++ features to simplify manual DLL linking.
+Code is using c++20.
+
+Also header is depending on [gsl library](https://github.com/microsoft/GSL.git), 
+using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. First can be 
+replaced with `void*` and second one with `const char*` if this dependency is not 
+acceptable.
 
 ```c++
 #include <dllhelper.hpp>
 #include <windows.h>
 #include <shellapi.h>
 #include <iostream>
-class ShellApi {
-  DllHelper m_dll{L"Shell32.dll"};
 
+class shellAbout
+{
 public:
-  operator bool() const noexcept {return m_dll && shellAbout != nullptr;}
-  decltype(ShellAboutW) *shellAbout = m_dll["ShellAboutW"];
-  std::error_code error_code() const noexcept { return m_dll.error_code(); }
+	void invoke()
+	{
+		m_shellAbout(nullptr, L"hello", L"world", nullptr);
+	}
+private:
+	static dll::Fp<decltype(ShellAboutW)> createFuncPointer()
+	{
+		dll::Helper a_dll{std::filesystem::path(L"Shell32.dll")};
+		dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutW"];
+		return shellAbout;
+	}
+
+	// With new approach there is no need to store the dll::Helper object, 
+	// as it is not used after the function pointer is created.
+	// The function pointer will keep the module handle alive as long as it is used.
+	dll::Fp<decltype(ShellAboutW)> m_shellAbout{createFuncPointer()};
 };
 
-int main() {
-  ShellApi shellApi;
-  if(shellApi) {
-      shellApi.shellAbout(NULL, L"hello", L"world", NULL);
-  }
-  else {
-	  std::cerr << "Failed: " << shellApi.error_code().message() << std::endl;
-  }
+int main()
+{
+	try {
+		shellAbout test;
+		test.invoke();
+	}
+	catch(const std::runtime_error& e) {
+		std::cerr << "Failed: " << e.what() << std::endl;
+	}
 }
 ```
+See the [example_win.cpp](src/samples/example_win.cpp) file for complete example.
 
 And now we can same in linux
 ```c++
@@ -34,31 +55,24 @@ And now we can same in linux
 #include <iostream>
 #include <cmath>
 
-class MathLib {
-    DllHelper m_dll{"libm.so.6"};
+int main()
+{
+    using std::filesystem::path;
+    try {
+        dll::Helper a_dll{path("libm.so.6")};
+        dll::Fp<decltype(cos)> cos_func = a_dll["cos"];
 
-public:
-    // Function pointer type for cos(double)
-    using cos_func_t =decltype(cos);
-    cos_func_t* cos_func = m_dll["cos"];
-
-    constexpr operator bool() const noexcept { return m_dll && cos_func != nullptr; }
-    std::string error_message() const {
-        return m_dll.error_message();
-	}
-};
-
-int main() {
-    MathLib mathLib;
-    if (mathLib) {
         double value = 0.0;
-        double result = mathLib.cos_func(value);
+        double result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << std::endl;
-    } else {
-        std::cerr << "Failed: " << mathLib.error_message() << std::endl;
+    }
+    catch(const std::runtime_error& ex) {
+        std::cerr << "Failed: " << ex.what() << std::endl;
     }
 }
-
 ```
+See the [example_linux.cpp](src/samples/example_linux.cpp) file for complete example.
 
-See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss)
+See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss) that 
+explains original idea of this library. Original code is located at 
+[bblanchon / dllhelper repository](https://github.com/bblanchon/dllhelper)

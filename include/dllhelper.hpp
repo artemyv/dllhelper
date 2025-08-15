@@ -1,63 +1,71 @@
 #pragma once
 
-#include <type_traits>
-#include <cstring> //for memcpy
+#include <concepts>
 #include <filesystem>
-#include <system_error>
+#include <stdexcept>
 #include <bit>
-
-class ProcPtr {
-public:
-  constexpr explicit ProcPtr(void* ptr) noexcept : _ptr(ptr) {}
-
-  template <typename T>
-      requires (std::is_function_v<T> && !std::is_member_function_pointer_v<T*>)
-  constexpr operator T* () const noexcept
-  {
-      static_assert(sizeof(T*) == sizeof(_ptr), "Pointer sizes must match");
-      return std::bit_cast<T*>(_ptr);
-  }
-
-private:
-  void* _ptr;
-};
-
-class DllHelper
+#include <memory>
+#include <gsl/pointers> // for gsl::not_null
+#include <gsl/zstring>
+namespace dll
 {
-public:
-    explicit DllHelper(const std::filesystem::path& filename) noexcept;
+	template<typename T>
+	concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
 
-    ~DllHelper();
-    DllHelper() = delete;
-    DllHelper(const DllHelper&) = delete; // Copy constructor
-    DllHelper& operator=(const DllHelper&) = delete; // Copy assignment
-    DllHelper(DllHelper&& other) = delete; // Move constructor
-    DllHelper& operator=(DllHelper&& other) = delete;// Move assignment
-    
-    constexpr operator bool() const noexcept
+    using lib_handle = std::shared_ptr<void>;
+    template<func T>
+    class Fp
     {
-        return _module != nullptr;
-    }
-    ProcPtr operator[](const char* proc_name) noexcept
-    {
-        return ProcPtr(GetProcAddr(proc_name));
-    }
-    constexpr const std::error_code& error_code() const noexcept
-    {
-        return m_ec;
-	}
-    constexpr std::string error_message() const noexcept
-    {
-        if(m_error_message.empty())
+    public:
+        [[nodiscard]] explicit Fp(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(std::bit_cast<T*>(ptr.get())) {}
+
+        template <typename ...Args>
+			requires (std::is_invocable_v<T, Args...>)
+        auto operator()(Args&& ...args) const noexcept(std::is_nothrow_invocable_v<T, Args...>)
         {
-            return m_ec.message();
-		}
-        return m_error_message;
-    }
+            return std::invoke(_ptr, std::forward<Args>(args)...);
+        }
 
-private:
-    void* GetProcAddr(const char* proc_name) noexcept;
-    void* _module = nullptr;
-    std::error_code m_ec;
-	std::string m_error_message;
-};
+    private:
+        lib_handle _module; // Keep the module handle alive as long as the ProcPtr exists
+        T* _ptr;
+    };
+    class Helper
+    {
+    public:
+        [[nodiscard]] explicit Helper(const std::filesystem::path& filename): _module(LoadLibraryInternal(filename))
+        {}
+
+        explicit Helper(auto p) = delete; // Prevent implicit conversion from other types
+        class ProcPtr
+        {
+        public:
+            [[nodiscard]] explicit ProcPtr(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(ptr) {}
+
+            template<typename T>
+                requires (std::is_function_v<T>)
+            [[nodiscard]] operator Fp<T>() const noexcept
+            {
+                return Fp<T>(_module, _ptr.get());
+            }
+
+        private:
+            lib_handle _module; // Keep the module handle alive as long as the ProcPtr exists
+            gsl::not_null<void*> _ptr;
+        };
+
+        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name) const 
+        {
+            if(!_module) {
+                throw std::runtime_error("DLL not loaded");
+            }
+            return ProcPtr(_module, GetProcAddr(proc_name));
+        }
+
+    private:
+        [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
+        [[nodiscard]] gsl::not_null<void*> GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const;
+
+        lib_handle _module;
+    };
+}
