@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DLLHELPER_HPP
+#define DLLHELPER_HPP
 
 #include <concepts>
 #include <filesystem>
@@ -42,8 +43,7 @@ namespace dll
         public:
             [[nodiscard]] explicit ProcPtr(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(ptr) {}
 
-            template<typename T>
-                requires (std::is_function_v<T>)
+            template<func T>
             [[nodiscard]] operator Fp<T>() const noexcept
             {
                 return Fp<T>(_module, _ptr.get());
@@ -69,3 +69,4 @@ namespace dll
         lib_handle _module;
     };
 }
+#endif // DLLHELPER_HPP
