@@ -1,4 +1,5 @@
 Instead of this library - use boost https://www.boost.org/doc/libs/1_89_0/doc/html/boost_dll/tutorial.html#boost_dll.tutorial.importing_a_c_function_from_windows_dll
+if you are not afraid of all its dependencies.
 
 How to GetProcAddress like a boss 😎
 ======
