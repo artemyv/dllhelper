@@ -14,12 +14,13 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
     return dll::lib_handle(static_cast<void*>(result), [](void* libptr) {::FreeLibrary(static_cast<HMODULE>(libptr)); });
 }
 
-gsl::not_null<void*> dll::Helper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const
+dll::handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
 {
 
     const auto res = GetProcAddress(static_cast<HMODULE>(_module.get()), proc_name);
     if(res == nullptr) {
-        throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Function {} not found", proc_name.get()));
+        const char* name = proc_name;
+        throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Function {} not found", name));
     }
     return res;
 }

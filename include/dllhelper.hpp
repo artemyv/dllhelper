@@ -1,15 +1,28 @@
 #ifndef DLLHELPER_HPP
 #define DLLHELPER_HPP
 
+#include <bit>
 #include <concepts>
 #include <filesystem>
-#include <stdexcept>
-#include <bit>
+#include <functional>
 #include <memory>
+#include <stdexcept>
+
+#if defined(WITH_GSL)
 #include <gsl/pointers> // for gsl::not_null
 #include <gsl/zstring>
+#endif
+
 namespace dll
 {
+#if defined(WITH_GSL)
+    using procname_t = gsl::not_null<gsl::czstring>;
+    using handle_t = gsl::not_null<void*>;
+#else
+    using procname_t = const char*;
+    using handle_t = void*;
+#endif
+
     template<typename T>
     concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
 
@@ -18,7 +31,7 @@ namespace dll
     class Fp
     {
     public:
-        [[nodiscard]] explicit Fp(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(std::bit_cast<T*>(ptr.get())) {}
+        [[nodiscard]] explicit Fp(lib_handle libptr, handle_t ptr) noexcept:_module(libptr), _ptr(std::bit_cast<T*>([ptr]() {void* p{ptr}; return p;}())) {}
 
         template <typename ...Args>
             requires (std::is_invocable_v<T, Args...>)
@@ -41,20 +54,20 @@ namespace dll
         class ProcPtr
         {
         public:
-            [[nodiscard]] explicit ProcPtr(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(ptr) {}
+            [[nodiscard]] explicit ProcPtr(lib_handle libptr, handle_t ptr) noexcept:_module(libptr), _ptr(ptr) {}
 
             template<func T>
             [[nodiscard]] operator Fp<T>() const noexcept
             {
-                return Fp<T>(_module, _ptr.get());
+                return Fp<T>(_module, _ptr);
             }
 
         private:
             lib_handle _module; // Keep the module handle alive as long as the ProcPtr exists
-            gsl::not_null<void*> _ptr;
+            handle_t _ptr;
         };
 
-        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name) const
+        [[nodiscard]] ProcPtr operator[](procname_t proc_name) const
         {
             if(!_module) {
                 throw std::runtime_error("DLL not loaded");
@@ -64,7 +77,7 @@ namespace dll
 
     private:
         [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
-        [[nodiscard]] gsl::not_null<void*> GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const;
+        [[nodiscard]] handle_t GetProcAddr(procname_t proc_name) const;
 
         lib_handle _module;
     };

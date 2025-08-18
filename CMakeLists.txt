@@ -14,18 +14,22 @@ endif()
 option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 
+option(DLLHELPER_USE_GSL       "Use GSL library" ON)
+
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
 #set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
 include(FetchContent)
-
-FetchContent_Declare(
-    GSL
-    GIT_REPOSITORY https://github.com/microsoft/GSL.git
-    GIT_TAG        v4.2.0 # or a commit hash or branch
-)
-FetchContent_MakeAvailable(GSL)
+if(DLLHELPER_USE_GSL)
+    FetchContent_Declare(
+        GSL
+        GIT_REPOSITORY https://github.com/microsoft/GSL.git
+        GIT_TAG        v4.2.0 # or a commit hash or branch
+    )
+    FetchContent_MakeAvailable(GSL)
+    add_compile_definitions(WITH_GSL)
+endif()
 
 add_subdirectory("src/library")
 
