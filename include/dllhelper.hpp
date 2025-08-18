@@ -10,8 +10,8 @@
 #include <gsl/zstring>
 namespace dll
 {
-	template<typename T>
-	concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
+    template<typename T>
+    concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
 
     using lib_handle = std::shared_ptr<void>;
     template<func T>
@@ -21,7 +21,7 @@ namespace dll
         [[nodiscard]] explicit Fp(lib_handle libptr, gsl::not_null<void*> ptr) noexcept:_module(libptr), _ptr(std::bit_cast<T*>(ptr.get())) {}
 
         template <typename ...Args>
-			requires (std::is_invocable_v<T, Args...>)
+            requires (std::is_invocable_v<T, Args...>)
         auto operator()(Args&& ...args) const noexcept(std::is_nothrow_invocable_v<T, Args...>)
         {
             return std::invoke(_ptr, std::forward<Args>(args)...);
@@ -54,7 +54,7 @@ namespace dll
             gsl::not_null<void*> _ptr;
         };
 
-        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name) const 
+        [[nodiscard]] ProcPtr operator[](gsl::not_null<gsl::czstring> proc_name) const
         {
             if(!_module) {
                 throw std::runtime_error("DLL not loaded");

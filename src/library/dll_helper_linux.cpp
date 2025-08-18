@@ -4,8 +4,8 @@
 dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     const auto res = dlopen(filename.c_str(), RTLD_LAZY);
-    if(res) {
-        return lib_handle(res, [](void* libptr) { dlclose(libptr); });
+    if(res != nullptr) {
+        return {res, [](void* libptr) { dlclose(libptr); }};
     }
     throw std::runtime_error(dlerror());
 }
@@ -13,7 +13,7 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
 gsl::not_null<void*> dll::Helper::GetProcAddr(gsl::not_null<gsl::czstring> proc_name) const
 {
     const auto res = dlsym(_module.get(), proc_name);
-    if(res)
+    if(res != nullptr)
         return res;
     throw std::runtime_error(dlerror());
 }

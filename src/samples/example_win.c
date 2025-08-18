@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 
-typedef int(WINAPI *ShellAboutProcW)(HWND, LPCWSTR, LPCWSTR, HICON);
+typedef int(WINAPI* ShellAboutProcW)(HWND, LPCWSTR, LPCWSTR, HICON);
 
 int main()
 {
