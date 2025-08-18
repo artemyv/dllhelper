@@ -14,6 +14,9 @@ endif()
 option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 
+# Ensure compile_commands.json is generated
+set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
+#set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
 include(FetchContent)
 
@@ -37,3 +40,23 @@ INSTALL(TARGETS dllhelper
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+if(DLLHELPER_MAIN_PROJECT)
+    # Add a custom target for Cppcheck
+    find_program(CPPCHECK_EXECUTABLE cppcheck)
+
+    if(CPPCHECK_EXECUTABLE )
+        add_custom_target(run_cppcheck
+            COMMAND ${CPPCHECK_EXECUTABLE}
+            --enable=all
+            --inconclusive
+            --quiet
+            --project=${CMAKE_BINARY_DIR}/compile_commands.json
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Running Cppcheck static analysis..."
+            VERBATIM
+        )
+    else()
+        message(WARNING "Cppcheck not found. Please install it to enable static analysis.")
+    endif()
+endif()

@@ -1,6 +1,6 @@
 #include <dllhelper.hpp>
 #include <system_error>
-
+#include <string_view>
 
 dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
