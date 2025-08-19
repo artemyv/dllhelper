@@ -14,7 +14,7 @@ private:
     static dll::Fp<decltype(ShellAboutW)> createFuncPointer()
     {
         dll::Helper a_dll{std::filesystem::path(L"Shell32.dll")};
-        dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutW"];
+        dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
         return shellAbout;
     }
 
@@ -39,7 +39,7 @@ int main()
 
     try {
         dll::Helper a_dll{path(L"Shell64.dll")};
-        const dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutW"];
+        const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }
@@ -49,7 +49,7 @@ int main()
 
     try {
         dll::Helper a_dll{path(L"Shell32.dll")};
-        const dll::Fp<decltype(ShellAboutW)> shellAbout = a_dll["ShellAboutX"];
+        const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutX"]};
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }

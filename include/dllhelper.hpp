@@ -64,7 +64,7 @@ namespace dll
             [[nodiscard]] explicit ProcPtr(lib_handle libptr, func_handle_t ptr) noexcept:_module(libptr), _ptr(ptr) {}
 
             template<func T>
-            [[nodiscard]] operator Fp<T>() const noexcept
+            [[nodiscard]] explicit operator Fp<T>() const noexcept
             {
                 return Fp<T>(_module, _ptr);
             }
