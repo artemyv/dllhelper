@@ -6,7 +6,6 @@
 #include <filesystem>
 #include <functional>
 #include <memory>
-#include <stdexcept>
 
 #if defined(WITH_GSL)
 #include <gsl/pointers> // for gsl::not_null
@@ -76,9 +75,6 @@ namespace dll
 
         [[nodiscard]] ProcPtr operator[](procname_t proc_name) const
         {
-            if(!_module) {
-                throw std::runtime_error("DLL not loaded");
-            }
             return ProcPtr(_module, GetProcAddr(proc_name));
         }
 

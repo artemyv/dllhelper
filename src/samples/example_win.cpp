@@ -2,11 +2,12 @@
 #include <Windows.h>
 #include <shellapi.h>
 #include <iostream>
+#include <system_error>
 
 class shellAbout
 {
 public:
-    void invoke()
+    void invoke() const
     {
         m_shellAbout(nullptr, L"hello", L"world", nullptr);
     }
@@ -30,8 +31,8 @@ int main()
         shellAbout test;
         test.invoke();
     }
-    catch(const std::runtime_error& e) {
-        std::cerr << "Failed: " << e.what() << std::endl;
+    catch(const std::system_error& e) {
+        std::cerr << "Err #1: " << e.what() << std::endl;
     }
 
     //Error handling examples
@@ -43,8 +44,8 @@ int main()
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }
-    catch(const std::runtime_error& e) {
-        std::cerr << "Failed: " << e.what() << std::endl;
+    catch(const std::system_error& e) {
+        std::cerr << "Err #2: " << e.what() << std::endl;
     }
 
     try {
@@ -53,8 +54,8 @@ int main()
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }
-    catch(const std::runtime_error& e) {
-        std::cerr << "Failed: " << e.what() << std::endl;
+    catch(const std::system_error& e) {
+        std::cerr << "Err #3: " << e.what() << std::endl;
     }
 
 }

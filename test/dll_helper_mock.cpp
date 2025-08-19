@@ -6,15 +6,16 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
 {
     if(filename.string() == "success") {
         static int x;
-        return lib_handle(std::bit_cast<lib_handle_replacer*>(&x), 
-            [](const lib_handle_replacer*) 
-            {
-                //mock cleanup - nothing to do
-            });
+        return {
+                    std::bit_cast<lib_handle_replacer*>(&x),
+                    [](const lib_handle_replacer*) {
+                        //mock cleanup - nothing to do
+                    }
+                };
     }
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
 }
-int mock_function()
+static int mock_function() noexcept
 {
     return 42;
 }

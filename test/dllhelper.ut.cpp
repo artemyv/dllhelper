@@ -25,29 +25,24 @@ TEST(DllHelperTest, MissingLib)
 TEST(DllHelperTest, ShouldNotCompile)
 {
     const dll::Helper mockDll(path("success"));
-    using fp = int*;
     //this should not compile
-    //dll::Fp<fp> func = mockDll["mock_function"];
-    //func();
+#ifdef NOT_COMPILING_SAMPLE
+    dll::Fp<int*> func = mockDll["mock_function"];
+    func();
+#endif
 }
-
-template<typename>
-struct PM_traits {};
-template<class T, class U>
-struct PM_traits<T U::*> { using member_type = T; };
 
 TEST(DllHelperTest, ShouldNotCompile2)
 {
     const dll::Helper mockDll(path("success"));
     struct  foo
     {
-        int bar()
+        int bar() const noexcept
         {
             return 42;
         }
     };
-    using mf = PM_traits<decltype(&foo::bar)>::member_type; // T is int() const&
-
-    const dll::Fp<mf> func{mockDll["mock_function"]};
-    //func(foo{});
+#ifdef NOT_COMPILING_SAMPLE
+    const dll::Fp<decltype(&foo::bar)> func{mockDll["mock_function"]};
+#endif
 }

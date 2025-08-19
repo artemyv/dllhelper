@@ -13,8 +13,8 @@ int main()
         const double result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << '\n';
     }
-    catch(const std::runtime_error& ex) {
-        std::cerr << "Failed: " << ex.what() << '\n';
+    catch(const std::invalid_argument& ex) {
+        std::cerr << "Err #1: " << ex.what() << '\n';
     }
 
     //Error handling examples
@@ -22,15 +22,15 @@ int main()
     try {
         const dll::Helper a_dll{path("libm.so.125")};
     }
-    catch(const std::runtime_error& ex) {
-        std::cerr << "Failed: " << ex.what() << '\n';
+    catch(const std::invalid_argument& ex) {
+        std::cerr << "Err #2: " << ex.what() << '\n';
     }
 
     try {
         const dll::Helper a_dll{path("libm.so.6")};
         [[maybe_unused]] const dll::Fp<decltype(cos)> cos_func{a_dll["coscoco"]};
     }
-    catch(const std::runtime_error& ex) {
-        std::cerr << "Failed: " << ex.what() << '\n';
+    catch(const std::invalid_argument& ex) {
+        std::cerr << "Err #3: " << ex.what() << '\n';
     }
 }
