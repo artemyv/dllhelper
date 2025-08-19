@@ -1,4 +1,4 @@
-#include <windows.h>
+#include <Windows.h>
 #include <stdio.h>
 
 typedef int(WINAPI* ShellAboutProcW)(HWND, LPCWSTR, LPCWSTR, HICON);
