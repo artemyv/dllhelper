@@ -6,15 +6,21 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
 {
     if(filename.string() == "success") {
         static int x;
-        return lib_handle(static_cast<void*>(&x), [](void*) {});
+        return lib_handle(std::bit_cast<lib_handle_replacer*>(&x), [](const lib_handle_replacer*) {});
     }
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
 }
+int mock_function()
+{
+    return 42;
+}
 
-dll::handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
+dll::func_handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
 {
     if(std::string_view(proc_name) == "mock_function") {
-        return reinterpret_cast<void*>(+[]() { return 42; });
+        auto ptr = &mock_function;
+
+        return std::bit_cast<const func_handle_replacer*>(ptr);
     }
     throw std::system_error(std::make_error_code(std::errc::operation_not_supported));
 }
