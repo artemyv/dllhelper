@@ -28,7 +28,6 @@ if(DLLHELPER_USE_GSL)
         GIT_TAG        v4.2.0 # or a commit hash or branch
     )
     FetchContent_MakeAvailable(GSL)
-    add_compile_definitions(WITH_GSL)
 endif()
 
 add_subdirectory("src/library")

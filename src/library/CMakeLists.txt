@@ -17,6 +17,9 @@ target_include_directories(dllhelper
 set_target_properties(dllhelper PROPERTIES 
     PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/dllhelper.hpp"
 )
+if(DLLHELPER_USE_GSL)
+    target_compile_definitions(dllhelper PUBLIC WITH_GSL)
+endif()
 
 INSTALL(TARGETS dllhelper 
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
