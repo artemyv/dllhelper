@@ -6,19 +6,35 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 # Create static library instead of interface library
-add_library(dllhelper STATIC
-    ${LIB_SOURCES}
+add_library(dllhelper STATIC)
+
+target_sources(dllhelper
+    PRIVATE
+        ${LIB_SOURCES}
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
 )
-target_include_directories(dllhelper 
-    PUBLIC 
-        ${PROJECT_SOURCE_DIR}/include
-        ${gsl_SOURCE_DIR}/include
-)
-set_target_properties(dllhelper PROPERTIES 
-    PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/dllhelper.hpp"
+target_compile_features(dllhelper PUBLIC cxx_std_20)
+set_target_properties(dllhelper PROPERTIES CXX_EXTENSIONS OFF)
+
+set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
+set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+target_compile_options(dllhelper PRIVATE
+  "$<${gcc_like_cxx}:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>"
+  "$<${msvc_cxx}:-W4>"
 )
 if(DLLHELPER_USE_GSL)
+    include(FetchContent)
+    FetchContent_Declare(
+        GSL
+        GIT_REPOSITORY "https://github.com/microsoft/GSL"
+        GIT_TAG        v4.2.0
+        GIT_SHALLOW    ON
+    )
+    FetchContent_MakeAvailable(GSL)
     target_compile_definitions(dllhelper PUBLIC WITH_GSL)
+    target_link_libraries(dllhelper PUBLIC Microsoft.GSL::GSL)
 endif()
 
 INSTALL(TARGETS dllhelper 

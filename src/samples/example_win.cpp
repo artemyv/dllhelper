@@ -39,6 +39,7 @@ int main()
     using std::filesystem::path;
 
     try {
+        std::cerr << "Going to use wrong dll name: Shell64.dll to demonstrate error handling using exceptions\n";
         dll::Helper a_dll{path(L"Shell64.dll")};
         const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
 
@@ -49,6 +50,7 @@ int main()
     }
 
     try {
+        std::cerr << "Going to use wrong function name: ShellAboutX to demonstrate error handling using exceptions\n";
         dll::Helper a_dll{path(L"Shell32.dll")};
         const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutX"]};
 

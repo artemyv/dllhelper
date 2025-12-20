@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 4.2)
 
-project(dllhelper)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+project(dllhelper VERSION 3.0.0
+                  DESCRIPTION "How to GetProcAddress like a boss"
+                  LANGUAGES CXX C)
 
 set(DLLHELPER_MAIN_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -13,30 +11,34 @@ endif()
 
 option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
-
-option(DLLHELPER_USE_GSL       "Use GSL library" ON)
+option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
-#set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
-include(FetchContent)
-if(DLLHELPER_USE_GSL)
-    FetchContent_Declare(
-        GSL
-        GIT_REPOSITORY https://github.com/microsoft/GSL.git
-        GIT_TAG        v4.2.0 # or a commit hash or branch
-    )
-    FetchContent_MakeAvailable(GSL)
+# Coverage option
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
+    add_compile_options(--coverage -O0)
+    add_link_options(--coverage)
 endif()
 
 add_subdirectory("src/library")
-
-add_subdirectory("src/samples")
+if(DLLHELPER_BUILD_SAMPLES)
+    add_subdirectory("src/samples")
+endif()
 
 if(DLLHELPER_BUILD_TESTS)
+    include(CTest)
     enable_testing()
     add_subdirectory("test")
+
+    # Run tests automatically after build
+    add_custom_target(run_dllhelper_tests ALL
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        COMMENT "Running unit tests for dllhelper library..."
+    )
+    add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
 
 INSTALL(TARGETS dllhelper 
@@ -44,22 +46,3 @@ INSTALL(TARGETS dllhelper
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-if(DLLHELPER_MAIN_PROJECT)
-    # Add a custom target for Cppcheck
-    find_program(CPPCHECK_EXECUTABLE cppcheck)
-
-    if(CPPCHECK_EXECUTABLE )
-        add_custom_target(run_cppcheck
-            COMMAND ${CPPCHECK_EXECUTABLE}
-            --enable=all
-            --inconclusive
-            --quiet
-            --project=${CMAKE_BINARY_DIR}/compile_commands.json
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Running Cppcheck static analysis..."
-            VERBATIM
-        )
-    else()
-        message(WARNING "Cppcheck not found. Please install it to enable static analysis.")
-    endif()
-endif()
