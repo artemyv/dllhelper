@@ -6,17 +6,18 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 # Create static library instead of interface library
-add_library(dllhelper STATIC
-    ${LIB_SOURCES}
+add_library(dllhelper STATIC)
+
+target_sources(dllhelper
+    PRIVATE
+        ${LIB_SOURCES}
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
 )
 target_compile_features(dllhelper PUBLIC cxx_std_20)
 set_target_properties(dllhelper PROPERTIES CXX_EXTENSIONS OFF)
 
-target_include_directories(dllhelper 
-    PUBLIC 
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-)
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 target_compile_options(dllhelper PRIVATE
