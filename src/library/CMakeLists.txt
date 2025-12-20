@@ -9,6 +9,8 @@ endif()
 add_library(dllhelper STATIC
     ${LIB_SOURCES}
 )
+target_compile_features(dllhelper PUBLIC cxx_std_20)
+
 target_include_directories(dllhelper 
     PUBLIC 
         ${PROJECT_SOURCE_DIR}/include
