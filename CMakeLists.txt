@@ -18,7 +18,6 @@ option(DLLHELPER_USE_GSL       "Use GSL library" ON)
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
-#set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
 include(FetchContent)
 if(DLLHELPER_USE_GSL)
@@ -31,11 +30,11 @@ if(DLLHELPER_USE_GSL)
 endif()
 
 add_subdirectory("src/library")
-
-add_subdirectory("src/samples")
+if(DLLHELPER_BUILD_SAMPLES)
+    add_subdirectory("src/samples")
+endif()
 
 if(DLLHELPER_BUILD_TESTS)
-    enable_testing()
     add_subdirectory("test")
 endif()
 

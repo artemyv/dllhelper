@@ -10,7 +10,7 @@ int main()
     if(hModule == NULL) {
         // Handle error
         DWORD error = GetLastError();
-        printf("Failed to load Shell32.dll, error code: %d\n", error);
+        printf("Failed to load Shell32.dll, error code: %lu\n", error);
         return 1;
     }
     ShellAboutProcW shellAbout =
@@ -18,7 +18,7 @@ int main()
     if(shellAbout == NULL) {
         // Handle error
         DWORD error = GetLastError();
-        printf("Failed to get address of ShellAboutW, error code: %d\n", error);
+        printf("Failed to get address of ShellAboutW, error code: %lu\n", error);
         FreeLibrary(hModule);
         return 1;
     }
