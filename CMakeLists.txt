@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 4.2)
 
 project(dllhelper)
 
@@ -44,22 +44,3 @@ INSTALL(TARGETS dllhelper
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-if(DLLHELPER_MAIN_PROJECT)
-    # Add a custom target for Cppcheck
-    find_program(CPPCHECK_EXECUTABLE cppcheck)
-
-    if(CPPCHECK_EXECUTABLE )
-        add_custom_target(run_cppcheck
-            COMMAND ${CPPCHECK_EXECUTABLE}
-            --enable=all
-            --inconclusive
-            --quiet
-            --project=${CMAKE_BINARY_DIR}/compile_commands.json
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Running Cppcheck static analysis..."
-            VERBATIM
-        )
-    else()
-        message(WARNING "Cppcheck not found. Please install it to enable static analysis.")
-    endif()
-endif()

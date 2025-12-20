@@ -33,15 +33,11 @@ if(DLLHELPER_BUILD_TESTS)
             ${gsl_SOURCE_DIR}/include
     )
 
-    # Add GTest discovery for CTest
     include(GoogleTest)
-    gtest_discover_tests(dllhelper_ut
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
+    gtest_discover_tests(dllhelper_ut)
 
     add_custom_target(run_tests ALL
-        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --verbose
         DEPENDS dllhelper_ut
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
 endif()
