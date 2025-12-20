@@ -4,8 +4,6 @@ project(dllhelper VERSION 3.0.0
                   DESCRIPTION "How to GetProcAddress like a boss"
                   LANGUAGES CXX C)
 
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 set(DLLHELPER_MAIN_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(DLLHELPER_MAIN_PROJECT ON)
