@@ -26,4 +26,3 @@ target_link_libraries(dllhelper_ut
 
 include(GoogleTest)
 gtest_discover_tests(dllhelper_ut)
-
