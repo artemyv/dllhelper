@@ -7,9 +7,10 @@ project(dllhelper VERSION 3.0.0
 set(DLLHELPER_MAIN_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(DLLHELPER_MAIN_PROJECT ON)
+    include(CTest)
 endif()
 
-option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
+option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${BUILD_TESTING})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
 
@@ -22,6 +23,7 @@ if(DLLHELPER_BUILD_SAMPLES)
 endif()
 
 if(DLLHELPER_BUILD_TESTS)
+    enable_testing()
     add_subdirectory("test")
 endif()
 
