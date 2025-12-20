@@ -13,7 +13,14 @@ target_compile_features(dllhelper PUBLIC cxx_std_20)
 
 target_include_directories(dllhelper 
     PUBLIC 
-        ${PROJECT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
+set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+target_compile_options(dllhelper PRIVATE
+  "$<${gcc_like_cxx}:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>"
+  "$<${msvc_cxx}:-W4>"
 )
 if(DLLHELPER_USE_GSL)
     include(FetchContent)
