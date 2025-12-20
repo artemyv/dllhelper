@@ -12,13 +12,18 @@ add_library(dllhelper STATIC
 target_include_directories(dllhelper 
     PUBLIC 
         ${PROJECT_SOURCE_DIR}/include
-        ${gsl_SOURCE_DIR}/include
-)
-set_target_properties(dllhelper PROPERTIES 
-    PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/dllhelper.hpp"
 )
 if(DLLHELPER_USE_GSL)
+    include(FetchContent)
+    FetchContent_Declare(
+        GSL
+        GIT_REPOSITORY "https://github.com/microsoft/GSL"
+        GIT_TAG        v4.2.0
+        GIT_SHALLOW    ON
+    )
+    FetchContent_MakeAvailable(GSL)
     target_compile_definitions(dllhelper PUBLIC WITH_GSL)
+    target_link_libraries(dllhelper PUBLIC Microsoft.GSL::GSL)
 endif()
 
 INSTALL(TARGETS dllhelper 

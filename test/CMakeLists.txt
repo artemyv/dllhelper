@@ -1,4 +1,5 @@
 #Download and make GTest available
+include(FetchContent)
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
@@ -17,13 +18,9 @@ add_executable(dllhelper_ut
 # Link GTest and the necessary libraries
 target_link_libraries(dllhelper_ut
     PRIVATE
+        dllhelper
         gtest
         gtest_main
-)
-target_include_directories(dllhelper_ut 
-    PRIVATE 
-        ${PROJECT_SOURCE_DIR}/include
-        ${gsl_SOURCE_DIR}/include
 )
 
 include(GoogleTest)
