@@ -27,11 +27,11 @@ if(DLLHELPER_BUILD_TESTS)
     add_subdirectory("test")
 
     # Run tests automatically after build
-    add_custom_target(run_tests ALL
+    add_custom_target(run_dllhelper_tests ALL
         COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-        DEPENDS dllhelper_ut
         COMMENT "Running unit tests for dllhelper library..."
     )
+    add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
 
 INSTALL(TARGETS dllhelper 

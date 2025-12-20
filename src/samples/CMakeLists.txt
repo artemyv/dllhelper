@@ -13,7 +13,10 @@ else()
         "example_linux.cpp"
     )
 endif()
-target_include_directories(example_in_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_sources(example_in_cpp PRIVATE
+    FILE_SET HEADERS
+    BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
+)
 # Link example_in_cpp with dllhelper static library
 target_link_libraries(example_in_cpp PRIVATE dllhelper)
 
