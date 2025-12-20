@@ -16,6 +16,13 @@ option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
 
+# Coverage option
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
+    add_compile_options(--coverage -O0)
+    add_link_options(--coverage)
+endif()
+
 add_subdirectory("src/library")
 if(DLLHELPER_BUILD_SAMPLES)
     add_subdirectory("src/samples")
