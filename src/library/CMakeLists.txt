@@ -6,14 +6,16 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 # Create static library instead of interface library
-add_library(dllhelper STATIC)
+add_library(dllhelper STATIC
+        ${LIB_SOURCES}
+)
 
 target_sources(dllhelper
-    PRIVATE
-        ${LIB_SOURCES}
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
+        FILES 
+            ${PROJECT_SOURCE_DIR}/include/dllhelper.hpp
 )
 target_compile_features(dllhelper PUBLIC cxx_std_20)
 set_target_properties(dllhelper PROPERTIES CXX_EXTENSIONS OFF)
@@ -37,7 +39,7 @@ if(DLLHELPER_USE_GSL)
     target_link_libraries(dllhelper PUBLIC Microsoft.GSL::GSL)
 endif()
 
-INSTALL(TARGETS dllhelper 
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+install(TARGETS dllhelper 
+        EXPORT  dllhelper-targets
+        FILE_SET HEADERS
 )

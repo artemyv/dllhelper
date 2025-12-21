@@ -12,6 +12,7 @@ endif()
 option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
+option(INSTALL_GTEST "Enable installation of googletest." OFF)
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
@@ -40,9 +41,4 @@ if(DLLHELPER_BUILD_TESTS)
     )
     add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
-
-INSTALL(TARGETS dllhelper 
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
 
