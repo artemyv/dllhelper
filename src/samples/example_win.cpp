@@ -1,4 +1,4 @@
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <Windows.h>
 #include <shellapi.h>
 #include <iostream>

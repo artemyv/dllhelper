@@ -1,4 +1,4 @@
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <dlfcn.h>
 #include <stdexcept>
 

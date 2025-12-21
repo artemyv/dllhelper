@@ -15,8 +15,9 @@ target_sources(dllhelper
         FILE_SET HEADERS
         BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
         FILES 
-            ${PROJECT_SOURCE_DIR}/include/dllhelper.hpp
+            ${PROJECT_SOURCE_DIR}/include/dllhelper.h
 )
+
 target_compile_features(dllhelper PUBLIC cxx_std_20)
 set_target_properties(dllhelper PROPERTIES CXX_EXTENSIONS OFF)
 

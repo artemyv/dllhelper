@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 
 using std::filesystem::path;
 TEST(DllHelperTest, Positive)
