@@ -45,26 +45,28 @@ endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelper-config.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
 )
 
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelperConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfig.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
+  COMPATIBILITY ExactVersion
+)
+
+install(
+    FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
 )
 
 install(
   EXPORT dllhelper-targets
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
   NAMESPACE dllhelper::
+  FILE dllhelper-targets.cmake
 )
 
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfigVersion.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
-)
