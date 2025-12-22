@@ -2,8 +2,9 @@
 include(FetchContent)
 FetchContent_Declare(
     googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        52eb8108c5bdec04579160ae17225d66034bd723 # release-1.17.0
+    FIND_PACKAGE_ARGS NAMES GTest
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -23,6 +24,10 @@ target_link_libraries(dllhelper_ut
         dllhelper
         GTest::gtest_main
 )
+if(_dllhelper_code_coverage )
+    target_compile_options(dllhelper_ut PRIVATE --coverage -O0)
+    target_link_options(dllhelper_ut    PRIVATE --coverage)
+endif()
 
 include(GoogleTest)
 gtest_discover_tests(dllhelper_ut)

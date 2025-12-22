@@ -36,6 +36,12 @@ if(DLLHELPER_USE_GSL)
     endif()
 endif()
 
+if(_dllhelper_code_coverage )
+    target_compile_options(dllhelper PRIVATE --coverage -O0)
+    target_link_options(dllhelper    PRIVATE --coverage)
+endif()
+
+
 install(TARGETS dllhelper 
         EXPORT  dllhelper-targets
         FILE_SET HEADERS
