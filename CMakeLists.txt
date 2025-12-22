@@ -9,7 +9,19 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(DLLHELPER_MAIN_PROJECT ON)
 endif()
 
-option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
+# Default DLLHELPER_BUILD_TESTS:
+# - If BUILD_TESTING is undefined: use DLLHELPER_MAIN_PROJECT
+# - If BUILD_TESTING is defined: use its value
+set(_dllhelper_default_tests ${DLLHELPER_MAIN_PROJECT})
+if(DEFINED BUILD_TESTING)
+    if(BUILD_TESTING)
+        set(_dllhelper_default_tests ON)
+    else()
+        set(_dllhelper_default_tests OFF)
+    endif()
+endif()
+option(DLLHELPER_BUILD_TESTS "Build the unit tests"   ${_dllhelper_default_tests})
+
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
 option(INSTALL_GTEST "Enable installation of googletest." OFF)
@@ -18,10 +30,10 @@ option(INSTALL_GTEST "Enable installation of googletest." OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
 
 # Coverage option
+set(_dllhelper_code_coverage OFF)
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
-    add_compile_options(--coverage -O0)
-    add_link_options(--coverage)
+    set(_dllhelper_code_coverage ON)
 endif()
 
 add_subdirectory("src/library")
