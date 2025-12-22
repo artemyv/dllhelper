@@ -1,4 +1,4 @@
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <dlfcn.h>
 #include <stdexcept>
 
@@ -10,9 +10,9 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
     throw std::invalid_argument(dlerror());
 }
 
-dll::func_handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
+dll::func_handle_internal_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
 {
     if(const auto res = dlsym(std::bit_cast<void*>(_module.get()), proc_name);res != nullptr)
-        return std::bit_cast<const func_handle_replacer*>(res);
+        return std::bit_cast<func_handle_internal_t>(res);
     throw std::invalid_argument(dlerror());
 }

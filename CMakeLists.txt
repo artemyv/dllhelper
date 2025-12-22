@@ -12,6 +12,7 @@ endif()
 option(DLLHELPER_BUILD_TESTS   "Build the unit tests" ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_BUILD_SAMPLES "Build the examples"   ${DLLHELPER_MAIN_PROJECT})
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
+option(INSTALL_GTEST "Enable installation of googletest." OFF)
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ${DLLHELPER_MAIN_PROJECT})
@@ -41,8 +42,31 @@ if(DLLHELPER_BUILD_TESTS)
     add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
 
-INSTALL(TARGETS dllhelper 
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelper-config.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
+  COMPATIBILITY ExactVersion
+)
+
+install(
+    FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+)
+
+install(
+  EXPORT dllhelper-targets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+  NAMESPACE dllhelper::
+  FILE dllhelper-targets.cmake
 )
 

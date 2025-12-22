@@ -1,4 +1,4 @@
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <system_error>
 #include <string_view>
 
@@ -20,12 +20,12 @@ static int mock_function() noexcept
     return 42;
 }
 
-dll::func_handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
+dll::func_handle_internal_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
 {
     if(std::string_view(proc_name) == "mock_function") {
         auto ptr = &mock_function;
 
-        return std::bit_cast<const func_handle_replacer*>(ptr);
+        return std::bit_cast<func_handle_internal_t>(ptr);
     }
     throw std::system_error(std::make_error_code(std::errc::operation_not_supported));
 }

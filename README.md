@@ -12,7 +12,7 @@ using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. This dependency
 turned off using option DLLHELPER_USE_GSL
 
 ```c++
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <Windows.h>
 #include <shellapi.h>
 #include <iostream>
@@ -55,7 +55,7 @@ See the [example_win.cpp](src/samples/example_win.cpp) file for complete example
 
 And now we can same in linux
 ```c++
-#include <dllhelper.hpp>
+#include <dllhelper.h>
 #include <iostream>
 #include <cmath>
 
