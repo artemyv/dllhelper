@@ -19,7 +19,7 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
     throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Failed to load {}", filename.string()));
 }
 
-dll::func_handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
+dll::func_handle_internal_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
 {
 
     const auto res = GetProcAddress(std::bit_cast<HMODULE>(_module.get()), proc_name);
@@ -27,5 +27,5 @@ dll::func_handle_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
         const char* name = proc_name;
         throw std::system_error(std::error_code(::GetLastError(), std::system_category()), std::format("Function {} not found", name));
     }
-    return std::bit_cast<const func_handle_replacer*>(res);
+    return std::bit_cast<func_handle_internal_t>(res);
 }

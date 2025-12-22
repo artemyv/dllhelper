@@ -28,16 +28,12 @@ target_compile_options(dllhelper PRIVATE
   "$<${msvc_cxx}:-W4>"
 )
 if(DLLHELPER_USE_GSL)
-    include(FetchContent)
-    FetchContent_Declare(
-        GSL
-        GIT_REPOSITORY "https://github.com/microsoft/GSL"
-        GIT_TAG        v4.2.0
-        GIT_SHALLOW    ON
-    )
-    FetchContent_MakeAvailable(GSL)
-    target_compile_definitions(dllhelper PUBLIC WITH_GSL)
-    target_link_libraries(dllhelper PUBLIC Microsoft.GSL::GSL)
+    find_package(Microsoft.GSL CONFIG QUIET)
+    if(Microsoft.GSL_FOUND)
+        # If found as imported, it is safe to expose publicly
+        target_link_libraries(dllhelper INTERFACE Microsoft.GSL::GSL)
+        target_compile_definitions(dllhelper INTERFACE WITH_GSL)
+    endif()
 endif()
 
 install(TARGETS dllhelper 

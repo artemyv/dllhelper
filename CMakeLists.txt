@@ -42,3 +42,29 @@ if(DLLHELPER_BUILD_TESTS)
     add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelperConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+)
+
+install(
+  EXPORT dllhelper-targets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+  NAMESPACE dllhelper::
+)
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/dllhelperConfigVersion.cmake"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
+)

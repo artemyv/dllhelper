@@ -1,0 +1,8 @@
+include(CMakeFindDependencyMacro)
+
+# Load transitive dependency if the library was built with GSL
+if(@DLLHELPER_USE_GSL@)
+    find_dependency(Microsoft.GSL CONFIG)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/dllhelper-targets.cmake")

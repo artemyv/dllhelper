@@ -16,12 +16,13 @@ namespace dll
 {
     struct lib_handle_replacer;
     struct func_handle_replacer;
+    using func_handle_internal_t = const func_handle_replacer*;
 #if defined(WITH_GSL)
     using procname_t = gsl::not_null<gsl::czstring>;
-    using func_handle_t = gsl::not_null<const func_handle_replacer*>;
+    using func_handle_t = gsl::not_null<func_handle_internal_t>;
 #else
     using procname_t = const char*;
-    using func_handle_t = const func_handle_replacer*;
+    using func_handle_t = func_handle_internal_t;
 #endif
 
     inline const func_handle_replacer* getRawHandle(func_handle_t ptr) noexcept
@@ -60,7 +61,7 @@ namespace dll
         class ProcPtr
         {
         public:
-            [[nodiscard]] explicit ProcPtr(lib_handle libptr, func_handle_t ptr) noexcept:_module(libptr), _ptr(ptr) {}
+            [[nodiscard]] explicit ProcPtr(lib_handle libptr, func_handle_internal_t ptr) noexcept:_module(libptr), _ptr(ptr) {}
 
             template<func T>
             [[nodiscard]] explicit operator Fp<T>() const noexcept
@@ -80,7 +81,7 @@ namespace dll
 
     private:
         [[nodiscard]] static  lib_handle LoadLibraryInternal(const std::filesystem::path& filename);
-        [[nodiscard]] func_handle_t GetProcAddr(procname_t proc_name) const;
+        [[nodiscard]] func_handle_internal_t GetProcAddr(procname_t proc_name) const;
 
         lib_handle _module;
     };
