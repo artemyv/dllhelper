@@ -42,7 +42,7 @@ if(_dllhelper_code_coverage )
 endif()
 
 
-install(TARGETS dllhelper 
-        EXPORT  dllhelper-targets
-        FILE_SET HEADERS
-)
+install(TARGETS dllhelper
+    EXPORT dllhelper-targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/${DLLHELPER_OS_DIR}/$<CONFIG>.${DLLHELPER_ARCH_TAG}
+    FILE_SET HEADERS)

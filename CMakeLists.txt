@@ -36,6 +36,40 @@ if(CODE_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
     set(_dllhelper_code_coverage ON)
 endif()
 
+# Define install dir variables early for subdirectories
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Detect Windows architecture tag and OS dir for install layout (must be before subdirectories)
+set(DLLHELPER_ARCH_TAG "")
+set(DLLHELPER_OS_DIR "${CMAKE_SYSTEM_NAME}")
+if(WIN32)
+    set(DLLHELPER_OS_DIR "win32")
+endif()
+
+if(DEFINED CMAKE_GENERATOR_PLATFORM AND CMAKE_GENERATOR_PLATFORM)
+    string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" _dllhelper_genplat)
+    if(_dllhelper_genplat STREQUAL "win32")
+        set(DLLHELPER_ARCH_TAG "x86")
+    elseif(_dllhelper_genplat STREQUAL "x64")
+        set(DLLHELPER_ARCH_TAG "x64")
+    elseif(_dllhelper_genplat STREQUAL "arm64")
+        set(DLLHELPER_ARCH_TAG "arm64")
+    else()
+        set(DLLHELPER_ARCH_TAG "${CMAKE_GENERATOR_PLATFORM}")
+    endif()
+else()
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(DLLHELPER_ARCH_TAG "x86")
+    else()
+        if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64|aarch64")
+            set(DLLHELPER_ARCH_TAG "arm64")
+        else()
+            set(DLLHELPER_ARCH_TAG "x64")
+        endif()
+    endif()
+endif()
+
 add_subdirectory("src/library")
 if(DLLHELPER_BUILD_SAMPLES)
     add_subdirectory("src/samples")
@@ -53,9 +87,6 @@ if(DLLHELPER_BUILD_TESTS)
     )
     add_dependencies(run_dllhelper_tests dllhelper_ut)
 endif()
-
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelper-config.cmake.in"
@@ -79,6 +110,5 @@ install(
   EXPORT dllhelper-targets
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
   NAMESPACE dllhelper::
-  FILE dllhelper-targets.cmake
+  FILE dllhelper-targets-${DLLHELPER_OS_DIR}.${DLLHELPER_ARCH_TAG}.cmake
 )
-
