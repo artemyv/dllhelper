@@ -19,6 +19,8 @@ jobs:
         uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
         with:
           cmake-version: '4.2.1'
+          # Explicitly disable auth to avoid "Bad credentials" from fork PRs
+          github-api-token: ''
       - name: Run Build
         run: |
           cmake --version
