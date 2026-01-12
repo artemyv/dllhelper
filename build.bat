@@ -1,5 +1,4 @@
-cmake -B build
-cmake --build build 
+cmake --workflow --preset llvm-debug
 
 
 
