@@ -21,11 +21,7 @@ option(
     ${PROJECT_IS_TOP_LEVEL}
 )
 
-
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
-option(INSTALL_GTEST "Enable installation of googletest." OFF)
-
-
 
 add_subdirectory("src/vart/dllhelper")
 
