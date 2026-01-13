@@ -72,6 +72,22 @@
       }
     },
     {
+      "name": "action",
+      "displayName": "Release Build with Coverage",
+      "inherits": [
+        "_root-config",
+        "_release-base"
+      ],
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS":"--coverage -O0",
+        "CMAKE_C_FLAGS":"--coverage -O0",
+        "CMAKE_EXE_LINKER_FLAGS":"--coverage",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
       "name": "appleclang-debug",
       "displayName": "Appleclang Debug Build",
       "inherits": [
@@ -151,6 +167,13 @@
       ]
     },
     {
+      "name": "action",
+      "configurePreset": "action",
+      "inherits": [
+        "_root-build"
+      ]
+    },
+    {
       "name": "appleclang-debug",
       "configurePreset": "appleclang-debug",
       "inherits": [
@@ -210,6 +233,11 @@
       "name": "llvm-release",
       "inherits": "_test_base",
       "configurePreset": "llvm-release"
+    },
+    {
+      "name": "action",
+      "inherits": "_test_base",
+      "configurePreset": "action"
     },
     {
       "name": "appleclang-debug",
@@ -298,6 +326,23 @@
         {
           "type": "test",
           "name": "llvm-release"
+        }
+      ]
+    },
+    {
+      "name": "action",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "action"
+        },
+        {
+          "type": "build",
+          "name": "action"
+        },
+        {
+          "type": "test",
+          "name": "action"
         }
       ]
     },

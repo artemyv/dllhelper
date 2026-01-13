@@ -19,8 +19,3 @@ target_sources(example_in_cpp PRIVATE
 )
 # Link example_in_cpp with dllhelper static library
 target_link_libraries(example_in_cpp PRIVATE vart::dllhelper)
-
-if(_dllhelper_code_coverage )
-    target_compile_options(example_in_cpp PRIVATE --coverage -O0)
-    target_link_options(example_in_cpp    PRIVATE --coverage)
-endif()

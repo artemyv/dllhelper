@@ -26,12 +26,6 @@ if(DLLHELPER_USE_GSL)
     endif()
 endif()
 
-if(_dllhelper_code_coverage )
-    target_compile_options(vart.dllhelper PRIVATE --coverage -O0)
-    target_link_options(vart.dllhelper    PRIVATE --coverage)
-endif()
-
-
 install(TARGETS vart.dllhelper
     EXPORT vart_dllhelper-targets
     FILE_SET HEADERS)

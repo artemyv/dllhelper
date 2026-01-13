@@ -23,10 +23,6 @@ target_link_libraries(dllhelper_ut
         vart::dllhelper
         GTest::gtest_main
 )
-if(_dllhelper_code_coverage )
-    target_compile_options(dllhelper_ut PRIVATE --coverage -O0)
-    target_link_options(dllhelper_ut    PRIVATE --coverage)
-endif()
 
 include(GoogleTest)
 gtest_discover_tests(dllhelper_ut)
