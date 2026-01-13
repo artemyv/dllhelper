@@ -1,7 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <dllhelper.h>
+#include <vart/dllhelper/dllhelper.h>
 #include <system_error>
 
 dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
