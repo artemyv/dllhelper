@@ -1,31 +1,19 @@
-#include <dllhelper.h>
-#include <system_error>
-#include <string_view>
+// Portable export macro for Windows and POSIX
+#if defined(_WIN32) || defined(__CYGWIN__)
+#  define MOCK_DLL_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+#  define MOCK_DLL_EXPORT __attribute__((visibility("default")))
+#else
+#  define MOCK_DLL_EXPORT
+#endif
 
-dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
-{
-    if(filename.string() == "success") {
-        static int x;
-        return {
-                    std::bit_cast<lib_handle_replacer*>(&x),
-                    [](const lib_handle_replacer*) {
-                        //mock cleanup - nothing to do
-                    }
-                };
-    }
-    throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
-}
-static int mock_function() noexcept
+#ifdef __cplusplus
+#  define MOCK_DLL_EXTERN extern "C"
+#else
+#  define MOCK_DLL_EXTERN
+#endif
+
+MOCK_DLL_EXTERN MOCK_DLL_EXPORT int mock_function() noexcept
 {
     return 42;
-}
-
-dll::func_handle_internal_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
-{
-    if(std::string_view(proc_name) == "mock_function") {
-        auto ptr = &mock_function;
-
-        return std::bit_cast<func_handle_internal_t>(ptr);
-    }
-    throw std::system_error(std::make_error_code(std::errc::operation_not_supported));
 }

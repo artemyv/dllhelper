@@ -39,6 +39,7 @@ if(VART_DLLHELPER_BUILD_TESTS)
 endif()
 
 # todo - use same approach as beman_install_library(beman.exemplar)
+include(CMakePackageConfigHelpers)
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelper-config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
@@ -58,8 +59,8 @@ install(
 )
 
 install(
-  EXPORT dllhelper-targets
+  EXPORT vart_dllhelper-targets
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
-  NAMESPACE dllhelper::
-  FILE dllhelper-targets-${DLLHELPER_OS_DIR}.${DLLHELPER_ARCH_TAG}.cmake
+  NAMESPACE vart::dllhelper::
+  FILE vart_dllhelper-targets-${DLLHELPER_OS_DIR}.${DLLHELPER_ARCH_TAG}.cmake
 )

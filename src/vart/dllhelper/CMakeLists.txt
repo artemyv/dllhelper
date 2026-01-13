@@ -6,43 +6,32 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 # Create static library instead of interface library
-add_library(dllhelper STATIC
-        ${LIB_SOURCES}
-)
+add_library(vart.dllhelper) 
+add_library(vart::dllhelper ALIAS vart.dllhelper)
 
-target_sources(dllhelper
+target_sources(vart.dllhelper
+    PRIVATE
+        ${LIB_SOURCES}
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
-        FILES 
-            ${PROJECT_SOURCE_DIR}/include/dllhelper.h
 )
 
-target_compile_features(dllhelper PUBLIC cxx_std_20)
-set_target_properties(dllhelper PROPERTIES CXX_EXTENSIONS OFF)
-
-set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
-set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
-target_compile_options(dllhelper PRIVATE
-  "$<${gcc_like_cxx}:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>"
-  "$<${msvc_cxx}:-W4>"
-)
 if(DLLHELPER_USE_GSL)
     find_package(Microsoft.GSL CONFIG QUIET)
     if(Microsoft.GSL_FOUND)
         # If found as imported, it is safe to expose publicly
-        target_link_libraries(dllhelper INTERFACE Microsoft.GSL::GSL)
-        target_compile_definitions(dllhelper INTERFACE WITH_GSL)
+        target_link_libraries(vart.dllhelper INTERFACE Microsoft.GSL::GSL)
+        target_compile_definitions(vart.dllhelper INTERFACE WITH_GSL)
     endif()
 endif()
 
 if(_dllhelper_code_coverage )
-    target_compile_options(dllhelper PRIVATE --coverage -O0)
-    target_link_options(dllhelper    PRIVATE --coverage)
+    target_compile_options(vart.dllhelper PRIVATE --coverage -O0)
+    target_link_options(vart.dllhelper    PRIVATE --coverage)
 endif()
 
 
-install(TARGETS dllhelper
-    EXPORT dllhelper-targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/${DLLHELPER_OS_DIR}/$<CONFIG>.${DLLHELPER_ARCH_TAG}
+install(TARGETS vart.dllhelper
+    EXPORT vart_dllhelper-targets
     FILE_SET HEADERS)

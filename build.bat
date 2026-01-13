@@ -1,4 +1,4 @@
-cmake --workflow --preset llvm-debug
+cmake --workflow --preset llvm-release
 
 
 
