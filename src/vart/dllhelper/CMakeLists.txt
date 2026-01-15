@@ -17,6 +17,8 @@ target_sources(vart.dllhelper
         BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
 )
 
+set_target_properties(vart.dllhelper PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+   
 if(DLLHELPER_USE_GSL)
     find_package(Microsoft.GSL CONFIG QUIET)
     if(Microsoft.GSL_FOUND)
