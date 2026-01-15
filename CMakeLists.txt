@@ -24,6 +24,7 @@ option(
 option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
 
 add_subdirectory("src/vart/dllhelper")
+add_subdirectory("include/vart/dllhelper")
 
 if(VART_DLLHELPER_BUILD_EXAMPLES)
     add_subdirectory("examples")
@@ -34,29 +35,7 @@ if(VART_DLLHELPER_BUILD_TESTS)
     add_subdirectory("tests/vart/dllhelper")
 endif()
 
-# todo - use same approach as beman_install_library(beman.exemplar)
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dllhelper-config.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
-)
+# for find of vart-install-library
+include(infra/cmake/vart-install-library-config.cmake)
 
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
-  COMPATIBILITY ExactVersion
-)
-
-install(
-    FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-config.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/dllhelper-version.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
-)
-
-install(
-  EXPORT vart_dllhelper-targets
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dllhelper
-  NAMESPACE vart::dllhelper::
-  FILE vart_dllhelper-targets-${DLLHELPER_OS_DIR}.${DLLHELPER_ARCH_TAG}.cmake
-)
+vart_install_library(vart.dllhelper)
