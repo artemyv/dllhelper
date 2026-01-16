@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.28...4.2)
 
 project(
-	vart.dllhelper
-        DESCRIPTION "How to GetProcAddress like a boss"
-        LANGUAGES CXX
-	VERSION 3.0.0
+    vart.dllhelper
+    DESCRIPTION "How to GetProcAddress like a boss"
+    LANGUAGES CXX
+    VERSION 3.0.0
 )
 
 # [CMAKE.SKIP_TESTS]
@@ -21,7 +21,7 @@ option(
     ${PROJECT_IS_TOP_LEVEL}
 )
 
-option(DLLHELPER_USE_GSL       "Use GSL library"      ON)
+option(DLLHELPER_USE_GSL "Use GSL library" ON)
 
 add_subdirectory("src/vart/dllhelper")
 add_subdirectory("include/vart/dllhelper")
