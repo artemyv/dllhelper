@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# Source: https://github.com/bemanproject/exemplar (infra/cmake/llvm-libc++-toolchain.cmake)
+# Modifications: adapted for dllhelper by Artemy Vysotsky, 2026
+#
 # This toolchain file is not meant to be used directly,
 # but to be invoked by CMake preset and GitHub CI.
 #

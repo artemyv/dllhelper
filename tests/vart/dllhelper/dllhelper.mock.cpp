@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // Portable export macro for Windows and POSIX
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define MOCK_DLL_EXPORT __declspec(dllexport)

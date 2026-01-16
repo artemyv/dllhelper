@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 if(WIN32)
     set(ALL_EXAMPLES win)
 else()

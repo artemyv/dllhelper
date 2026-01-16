@@ -1,0 +1,17 @@
+dllhelper NOTICE
+
+This project is licensed under the MIT License. See LICENSE.md.
+
+This project includes code and ideas from:
+- Original idea: https://blog.benoitblanchon.fr/getprocaddress-like-a-boss/
+- Original code (MIT): https://github.com/bblanchon/dllhelper — Copyright (c) Benoit Blanchon
+- Forked code (MIT): https://github.com/fginez/dllhelper — Copyright (c) Francisco Ginez
+- CMake snippets (Apache-2.0): https://github.com/bemanproject/exemplar — adapted for this project
+
+Modifications:
+- Most C++ code has been rewritten/changed in this repository.
+- CMake scripts and github actions imported from exemplar have been slightly modified for this project.
+- Modifications by Artemy Vysotsky, 2026.
+
+Build workflows:
+- This repository references external GitHub Actions and reusable workflows. See THIRD_PARTY_NOTICES.md for details.

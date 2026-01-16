@@ -1,19 +1,18 @@
-set(LIB_SOURCES)
-if(WIN32)
-    list(APPEND LIB_SOURCES dll_helper_win.cpp)
-elseif(UNIX AND NOT APPLE)
-    list(APPEND LIB_SOURCES dll_helper_linux.cpp)
-endif()
+# SPDX-License-Identifier: MIT
 
-# Create static library instead of interface library
 add_library(vart.dllhelper)
 add_library(vart::dllhelper ALIAS vart.dllhelper)
 
 set_target_properties(vart.dllhelper PROPERTIES LINKER_LANGUAGE CXX)
 
+if(WIN32)
+    target_sources(vart.dllhelper PRIVATE dll_helper_win.cpp)
+else()
+    target_sources(vart.dllhelper PRIVATE dll_helper_linux.cpp)
+endif()
+
 target_sources(
     vart.dllhelper
-    PRIVATE ${LIB_SOURCES}
     PUBLIC FILE_SET HEADERS BASE_DIRS "${PROJECT_SOURCE_DIR}/include"
 )
 
@@ -28,4 +27,4 @@ if(DLLHELPER_USE_GSL)
     endif()
 endif()
 
-install(TARGETS vart.dllhelper EXPORT vart_dllhelper-targets FILE_SET HEADERS)
+#install(TARGETS vart.dllhelper EXPORT vart_dllhelper-targets FILE_SET HEADERS)

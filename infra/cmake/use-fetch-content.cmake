@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# Source: https://github.com/bemanproject/exemplar (infra/cmake/use-fetch-content.cmake)
+# Modifications: adapted for dllhelper by Artemy Vysotsky, 2026
 
 include(FetchContent)
 

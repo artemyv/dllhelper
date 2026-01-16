@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# Source: https://github.com/bemanproject/exemplar (.github/workflows/ci_tests.yml)
+# Modifications: adapted for dllhelper by Artemy Vysotsky, 2026
+
 name: Continuous Integration Tests
 
 on:

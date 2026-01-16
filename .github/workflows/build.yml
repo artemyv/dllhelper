@@ -1,3 +1,4 @@
+# Inspired by https://github.com/sonarsource-cfamily-examples/linux-cmake-gcovr-gh-actions-sc/blob/main/.github/workflows/build.yml
 name: Build
 permissions:
   contents: read

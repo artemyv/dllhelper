@@ -1,5 +1,6 @@
-#ifndef DLLHELPER_HPP
-#define DLLHELPER_HPP
+// SPDX-License-Identifier: MIT
+#ifndef VART_DLLHELPER_DLLHELPER_HPP
+#define VART_DLLHELPER_DLLHELPER_HPP
 
 #include <bit>
 #include <concepts>
@@ -79,4 +80,4 @@ class Helper {
     lib_handle _module;
 };
 } // namespace dll
-#endif // DLLHELPER_HPP
+#endif // VART_DLLHELPER_DLLHELPER_HPP
