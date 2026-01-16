@@ -1,7 +1,7 @@
 # vart.dllhelper: How to GetProcAddress like a boss 😎
 
 <!-- markdownlint-disable-next-line line-length -->
-![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/artemyv/dllhelper/badge.svg?branch=main)](https://coveralls.io/github/artemyv/dllhelper?branch=main) 
+![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/artemyv/dllhelper/badge.svg?branch=main)](https://coveralls.io/github/artemyv/dllhelper?branch=main)
 
 
 `vart.dllhelper` is a minimal C++ library attempting to follow
@@ -147,4 +147,3 @@ instrumentation enabled and many sanitizers enabled.
 
 The `release` presets are designed for production use, and
 consequently have the highest optimization turned on (e.g. `O3`).
-
