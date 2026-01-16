@@ -1,12 +1,15 @@
 <!-- markdownlint-disable-next-line line-length -->
 ![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) 
 
-`vart.dllhelper` is a minimal C++ library attempting to follow [The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
-It provides a clean, modern C++ project structure and can serve as a template for new libraries.
+`vart.dllhelper` is a minimal C++ library attempting to follow
+[The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
+It strives to achive a clean, modern C++ project structure.
 
-**Demonstrates**: how to leverage modern C++ features to simplify manual DLL linking. Uses C++20.
+**Demonstrates**: how to leverage modern C++ features to simplify manual DLL linking. Uses C++20 features.
 
-Instead of this library, you can use [Boost.DLL](https://www.boost.org/doc/libs/latest/doc/html/boost_dll/tutorial.html#boost_dll.tutorial.importing_a_c_function_from_windows_dll) if you’re comfortable with its dependency footprint.
+Instead of this library, you can use
+[Boost.DLL](https://www.boost.org/doc/libs/latest/doc/html/boost_dll/tutorial.html#boost_dll.tutorial.importing_a_c_function_from_windows_dll)
+if you’re comfortable with its dependency footprint.
 
 **How to GetProcAddress like a boss** 😎
 
