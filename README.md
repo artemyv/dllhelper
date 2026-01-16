@@ -1,18 +1,21 @@
 <!-- markdownlint-disable-next-line line-length -->
-![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) 
+![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) 
 
-`vart.dllhelper` is a minimal C++ library attempting to follow [The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
-It is intended to use a minimal and modern C++ project structure.
+`vart.dllhelper` is a minimal C++ library attempting to follow
+[The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
+It strives to achive a clean, modern C++ project structure.
 
-**Demonstrates**: how to leverage modern C++ features to simplify manual DLL linking. Code is using c++20..
+**Demonstrates**: how to leverage modern C++ features to simplify manual DLL linking. Uses C++20 features.
 
-Instead of this library - boost https://www.boost.org/doc/libs/1_89_0/doc/html/boost_dll/tutorial.html#boost_dll.tutorial.importing_a_c_function_from_windows_dll can be used, if you are not afraid of all its dependencies.
+Instead of this library, you can use
+[Boost.DLL](https://www.boost.org/doc/libs/latest/doc/html/boost_dll/tutorial.html#boost_dll.tutorial.importing_a_c_function_from_windows_dll)
+if you’re comfortable with its dependency footprint.
 
 **How to GetProcAddress like a boss** 😎
 
-Library header depends on [gsl library](https://github.com/microsoft/GSL.git), 
-using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. This dependency could be
-turned on and off using option DLLHELPER_USE_GSL
+Library header depends on the [GSL library](https://github.com/microsoft/GSL.git), 
+using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. This dependency is
+controlled via the CMake option `DLLHELPER_USE_GSL`.
 
 ```c++
 #include <vart/dllhelper/dllhelper.h>
@@ -56,7 +59,7 @@ int main()
 ```
 See the [win.cpp](examples/win.cpp) file for complete example.
 
-And now we can same in linux
+And now the same on Linux
 ```c++
 #include <vart/dllhelper/dllhelper.h>
 #include <iostream>
@@ -67,7 +70,7 @@ int main()
     using std::filesystem::path;
     try {
         const dll::Helper a_dll{path("libm.so.6")};
-        const dll::Fp<decltype(cos)> cos_func{a_dll["cos"]};
+        const dll::Fp<double(double)> cos_func{a_dll["cos"]};
 
         constexpr double value = 0.0;
         const double result = cos_func(value);
