@@ -1,5 +1,9 @@
 # vart.dllhelper: How to GetProcAddress like a boss 😎
 
+<!--
+SPDX-License-Identifier: MIT
+-->
+
 <!-- markdownlint-disable-next-line line-length -->
 ![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/artemyv/dllhelper/badge.svg?branch=main)](https://coveralls.io/github/artemyv/dllhelper?branch=main)
 
@@ -113,6 +117,7 @@ This project officially supports:
 
 * GCC versions 11–15
 * LLVM Clang++ (with libstdc++ or libc++) versions 17–21
+* AppleClang version 17.0.0 (i.e., the [latest version on GitHub-hosted macOS runners](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md))
 * MSVC version 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))
 
 > [!NOTE]

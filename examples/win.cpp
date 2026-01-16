@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include <vart/dllhelper/dllhelper.h>
 #include <Windows.h>
 #include <shellapi.h>

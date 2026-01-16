@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 find_package(GTest REQUIRED)
 
 # Add a new UT project using GTest

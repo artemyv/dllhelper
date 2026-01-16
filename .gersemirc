@@ -1,0 +1,14 @@
+# gersemi configuration for this repository
+# See: https://github.com/BlankSpruce/gersemi
+
+# Suppress warnings about custom commands not known to gersemi.
+#warn_about_unknown_commands: false
+
+# Provide paths where custom command definitions (functions/macros) live.
+# This helps gersemi discover your definitions when possible.
+definitions:
+  - ./infra/cmake
+
+# Optional: keep formatting consistent if desired.
+# line_length: 120
+# list_expansion: favour-inlining

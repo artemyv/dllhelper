@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# Source: https://github.com/bemanproject/exemplar (infra/cmake/beman-install-library-config.cmake)
+# Modifications: renamed function to `vart_install_library` and adapted messages by Artemy Vysotsky, 2026
 include_guard(GLOBAL)
 
 # This file defines the function `vart_install_library` which is used to
