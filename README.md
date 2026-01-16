@@ -1,9 +1,9 @@
 <!-- markdownlint-disable-next-line line-length -->
-![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) 
+![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg)
 
 `vart.dllhelper` is a minimal C++ library attempting to follow
 [The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
-It strives to achive a clean, modern C++ project structure.
+It strives to achieve a clean, modern C++ project structure.
 
 **Demonstrates**: how to leverage modern C++ features to simplify manual DLL linking. Uses C++20 features.
 
@@ -13,7 +13,7 @@ if you’re comfortable with its dependency footprint.
 
 **How to GetProcAddress like a boss** 😎
 
-Library header depends on the [GSL library](https://github.com/microsoft/GSL.git), 
+Library header depends on the [GSL library](https://github.com/microsoft/GSL.git),
 using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. This dependency is
 controlled via the CMake option `DLLHELPER_USE_GSL`.
 
@@ -39,7 +39,7 @@ private:
         return shellAbout;
     }
 
-    // With new approach there is no need to store the dll::Helper object, 
+    // With new approach there is no need to store the dll::Helper object,
     // as it is not used after the function pointer is created.
     // The function pointer will keep the module handle alive as long as it is used.
     dll::Fp<decltype(ShellAboutW)> m_shellAbout{createFuncPointer()};
@@ -83,6 +83,6 @@ int main()
 ```
 See the [linux.cpp](examples/linux.cpp) file for complete example.
 
-See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss) that 
-explains original idea of this library. Original code is located at 
+See [blog post](https://blog.benoitblanchon.fr/getprocaddress-like-a-boss) that
+explains original idea of this library. Original code is located at
 [bblanchon / dllhelper repository](https://github.com/bblanchon/dllhelper)
