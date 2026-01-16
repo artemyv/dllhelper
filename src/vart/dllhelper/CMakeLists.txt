@@ -9,6 +9,8 @@ endif()
 add_library(vart.dllhelper) 
 add_library(vart::dllhelper ALIAS vart.dllhelper)
 
+set_target_properties(vart.dllhelper PROPERTIES LINKER_LANGUAGE CXX)
+
 target_sources(vart.dllhelper
     PRIVATE
         ${LIB_SOURCES}

@@ -1,13 +1,12 @@
 #include <vart/dllhelper/dllhelper.h>
 #include <iostream>
-#include <cmath>
 
 int main()
 {
     using std::filesystem::path;
     try {
         const dll::Helper a_dll{path("libm.so.6")};
-        const dll::Fp<decltype(cos)> cos_func{a_dll["cos"]};
+        const dll::Fp<double(double)> cos_func{a_dll["cos"]};
 
         constexpr double value = 0.0;
         const double result = cos_func(value);
@@ -28,7 +27,7 @@ int main()
 
     try {
         const dll::Helper a_dll{path("libm.so.6")};
-        [[maybe_unused]] const dll::Fp<decltype(cos)> cos_func{a_dll["coscoco"]};
+        [[maybe_unused]] const dll::Fp<double(double)> cos_func{a_dll["coscoco"]};
     }
     catch(const std::invalid_argument& ex) {
         std::cerr << "Err #3: " << ex.what() << '\n';
