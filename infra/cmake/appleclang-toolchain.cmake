@@ -14,13 +14,10 @@
 
 include_guard(GLOBAL)
 
-# Find compilers
-find_program(CMAKE_C_COMPILER clang)
-find_program(CMAKE_CXX_COMPILER clang++)
-find_program(CMAKE_OBJC_COMPILER clang)
-if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER OR NOT CMAKE_OBJC_COMPILER)
-    message(FATAL_ERROR "Clang compilers not found. Ensure clang is installed and in PATH.")
-endif()
+# Prevent PATH collision with an LLVM clang installation by using the system
+# compiler shims
+set(CMAKE_C_COMPILER cc)
+set(CMAKE_CXX_COMPILER c++)
 
 if(DLLHELPER_BUILDSYS_SANITIZER STREQUAL "MaxSan")
     set(SANITIZER_FLAGS
