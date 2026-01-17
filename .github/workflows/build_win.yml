@@ -40,5 +40,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
         with:
           args: >
-            --define sonar.cfamily.compile-commands="build/compile_commands.json"
-            --define sonar.cfamily.cobertura.reportPaths="cobertura.xml"
+            --define sonar.cfamily.compile-commands=build/compile_commands.json
+            --define sonar.cfamily.cobertura.reportPaths=cobertura.xml
