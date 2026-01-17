@@ -22,7 +22,7 @@ option(
     ${PROJECT_IS_TOP_LEVEL}
 )
 
-option(DLLHELPER_USE_GSL "Use GSL library" ON)
+option(VART_DLLHELPER_USE_GSL "Use GSL library" ON)
 
 add_subdirectory("src/vart/dllhelper")
 add_subdirectory("include/vart/dllhelper")
