@@ -89,6 +89,22 @@
       }
     },
     {
+      "name": "action_win",
+      "displayName": "Release Build with Coverage on Windows",
+      "inherits": [
+        "_root-config",
+        "_release-base"
+      ],
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS":"--coverage -O0",
+        "CMAKE_C_FLAGS":"--coverage -O0",
+        "CMAKE_EXE_LINKER_FLAGS":"--coverage",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
       "name": "appleclang-debug",
       "displayName": "Appleclang Debug Build",
       "inherits": [
@@ -170,6 +186,13 @@
     {
       "name": "action",
       "configurePreset": "action",
+      "inherits": [
+        "_root-build"
+      ]
+    },
+    {
+      "name": "action_win",
+      "configurePreset": "action_win",
       "inherits": [
         "_root-build"
       ]
@@ -344,6 +367,19 @@
         {
           "type": "test",
           "name": "action"
+        }
+      ]
+    },
+    {
+      "name": "action_win",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "action_win"
+        },
+        {
+          "type": "build",
+          "name": "action_win"
         }
       ]
     },
