@@ -1,0 +1,44 @@
+# Inspired by https://github.com/sonarsource-cfamily-examples/windows-msbuild-opencppcoverage-gh-actions-sc/blob/main/.github/workflows/build.yml
+
+name: Build on Windows
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Install CMake 4.2.1
+        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
+        with:
+          cmake-version: '4.2.1'
+          # Explicitly disable auth to avoid "Bad credentials" from fork PRs
+          github-api-token: ''
+      - name: Install OpenCppCoverage # Needed to generate coverage
+        run: |
+          curl -L https://github.com/OpenCppCoverage/OpenCppCoverage/releases/download/release-0.9.9.0/OpenCppCoverageSetup-x64-0.9.9.0.exe -o OpenCppCoverageSetup.exe
+          Start-Process -FilePath .\OpenCppCoverageSetup.exe -ArgumentList "/SUPRESSMSGBOXES /NORESTART /VERYSILENT" -NoNewWindow -Wait
+      - name: Run Build
+        run: |
+          cmake --version
+          cmake --workflow action_win
+      - name: Run tests with coverage
+        run: |
+          &"C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" --cover_children --sources="src\vart\dllhelper" --sources="include\vart\dllhelper" --module=*dllhelper.* "--export_type=cobertura:cobertura.xml" -- cmake --build build --target test
+      - name:  Official SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
+        with:
+          args: >
+            --define sonar.cfamily.compile-commands="build/compile_commands.json"
+            --define sonar.cfamily.cobertura.reportPaths="cobertura.xml"
