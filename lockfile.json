@@ -6,6 +6,13 @@
       "git_repository": "https://github.com/google/googletest.git",
       "git_tag": "52eb8108c5bdec04579160ae17225d66034bd723",
       "comment": "tag v1.17.0"
+    },
+    {
+      "name": "gsl",
+      "package_name": "Microsoft.GSL",
+      "git_repository": "https://github.com/microsoft/GSL.git",
+      "git_tag": "2828399820ef4928cc89b65605dca5dc68efca6e",
+      "comment": "tag v4.2.0"
     }
   ]
 }

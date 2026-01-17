@@ -21,9 +21,17 @@ set_target_properties(vart.dllhelper PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
 if(DLLHELPER_USE_GSL)
     find_package(Microsoft.GSL CONFIG QUIET)
     if(Microsoft.GSL_FOUND)
-        # If found as imported, it is safe to expose publicly
-        target_link_libraries(vart.dllhelper INTERFACE Microsoft.GSL::GSL)
-        target_compile_definitions(vart.dllhelper INTERFACE WITH_GSL)
+        # Link GSL only for the build tree to avoid exporting
+        # a non-imported target from FetchContent in install(EXPORT).
+        if(TARGET Microsoft.GSL::GSL)
+            target_link_libraries(
+                vart.dllhelper
+                PUBLIC $<BUILD_INTERFACE:Microsoft.GSL::GSL>
+            )
+        elseif(TARGET GSL)
+            target_link_libraries(vart.dllhelper PUBLIC $<BUILD_INTERFACE:GSL>)
+        endif()
+        target_compile_definitions(vart.dllhelper PUBLIC WITH_GSL)
     endif()
 endif()
 
