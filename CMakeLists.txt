@@ -5,7 +5,7 @@ project(
     vart.dllhelper
     DESCRIPTION "How to GetProcAddress like a boss"
     LANGUAGES CXX
-    VERSION 3.0.0
+    VERSION 3.0.1
 )
 
 # [CMAKE.SKIP_TESTS]
