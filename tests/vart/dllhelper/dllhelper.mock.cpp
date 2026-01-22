@@ -14,4 +14,7 @@
 #define MOCK_DLL_EXTERN
 #endif
 
-MOCK_DLL_EXTERN MOCK_DLL_EXPORT int mock_function() noexcept { return 42; }
+MOCK_DLL_EXTERN MOCK_DLL_EXPORT int mock_function() noexcept
+{
+    return 42;
+}

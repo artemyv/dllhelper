@@ -17,6 +17,7 @@ These are referenced in workflow YAML; licenses are governed by their upstream r
   - .github/workflows/reusable-beman-preset-test.yml
   - .github/workflows/reusable-beman-build-and-test.yml
   - .github/workflows/reusable-beman-pre-commit.yml
+- RafikFarhad/clang-format-github-action@v5 - https://github.com/RafikFarhad/clang-format-github-action
 
 Notes:
 - Actions are referenced, not vendored. If any action code is copied into this repo in the future, include its LICENSE alongside the copied files.
