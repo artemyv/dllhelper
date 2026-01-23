@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 <!-- markdownlint-disable-next-line line-length -->
 ![Continuous Integration Tests](https://github.com/artemyv/dllhelper/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/artemyv/dllhelper/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/artemyv/dllhelper/badge.svg?branch=main)](https://coveralls.io/github/artemyv/dllhelper?branch=main)
 
-
 `vart.dllhelper` is a minimal C++ library attempting to follow
 [The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/beman_standard.md).
 It strives to achieve a clean, modern C++ project structure.
@@ -65,13 +64,14 @@ int main()
         shellAbout test;
         test.invoke();
     }
-    catch (const std::system_error& e)
+    catch (const dll::DllError& e)
     {
-        std::cerr << "Err #1: " << e.what() << std::endl;
+        std::cerr << "Err #1: " << getMessage(e) << std::endl;
     }
 }
 
 ```
+
 See the [win.cpp](examples/win.cpp) file for complete example.
 
 ### Usage: Linux example calling double std::cos(double) function from libm.so.6
@@ -93,12 +93,13 @@ int main()
         const double                  result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << '\n';
     }
-    catch (const std::invalid_argument& ex)
+    catch (const dll::DllError& ex)
     {
-        std::cerr << "Err #1: " << ex.what() << '\n';
+        std::cerr << "Err #1: " << getMessage(ex) << '\n';
     }
 }
 ```
+
 See the [linux.cpp](examples/linux.cpp) file for complete example.
 
 ## Reference
@@ -125,7 +126,7 @@ You can disable building tests by setting CMake option
 
 This project officially supports:
 
-* GCC versions 11–15
+* GCC versions 13–15
 * LLVM Clang++ (with libstdc++ or libc++) versions 17–21
 * AppleClang version 17.0.0 (i.e., the [latest version on GitHub-hosted macOS runners](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md))
 * MSVC version 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))

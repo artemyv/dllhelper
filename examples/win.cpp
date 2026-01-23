@@ -33,9 +33,9 @@ int main()
         shellAbout test;
         test.invoke();
     }
-    catch (const std::system_error& e)
+    catch (const dll::DllError& e)
     {
-        std::cerr << "Err #1: " << e.what() << std::endl;
+        std::cerr << "Err #1: " << getMessage(e) << std::endl;
     }
 
     // Error handling examples
@@ -49,9 +49,9 @@ int main()
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }
-    catch (const std::system_error& e)
+    catch (const dll::DllError& e)
     {
-        std::cerr << "Err #2: " << e.what() << std::endl;
+        std::cerr << "Err #2: " << getMessage(e) << std::endl;
     }
 
     try
@@ -62,8 +62,8 @@ int main()
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
     }
-    catch (const std::system_error& e)
+    catch (const dll::DllError& e)
     {
-        std::cerr << "Err #3: " << e.what() << std::endl;
+        std::cerr << "Err #3: " << getMessage(e) << std::endl;
     }
 }

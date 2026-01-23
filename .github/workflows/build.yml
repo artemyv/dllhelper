@@ -1,41 +1,83 @@
 # Inspired by https://github.com/sonarsource-cfamily-examples/linux-cmake-gcovr-gh-actions-sc/blob/main/.github/workflows/build.yml
-name: Build on Linux
+name: Build (Windows → Linux merge) and Sonar
 permissions:
   contents: read
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
-  build:
-    name: Build
+  windows:
+    name: Build + Coverage (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install CMake 4.2.1
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.1'
+          github-api-token: ''
+      - name: Configure + Build + Test (Windows)
+        shell: pwsh
+        run: |
+          cmake --version
+          cmake --workflow action_win
+      - name: Convert coverage to .gcov (Windows via llvm-cov)
+        shell: pwsh
+        run: |
+          $llvmCov = "llvm-cov.exe"
+          New-Item -ItemType Directory -Path coverage-windows -Force | Out-Null
+          Push-Location coverage-windows
+          $objs = Get-ChildItem ..\build -Recurse -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" -and $_.FullName -notmatch "CompilerId" }
+          if ($objs.Count -eq 0) { Write-Host "No object files found for coverage"; Pop-Location; exit 0 }
+          & $llvmCov gcov -l ($objs | ForEach-Object { $_.FullName })
+          Pop-Location
+      - name: Upload coverage artifacts (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-windows
+          path: coverage-windows
+
+  linux:
+    name: Build + Merge Coverage + Sonar (Linux)
+    needs: windows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Install CMake 4.2.1
-        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
+        uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: '4.2.1'
-          # Explicitly disable auth to avoid "Bad credentials" from fork PRs
           github-api-token: ''
-      - name: Run Build
+      - name: Configure + Build + Test (Linux)
+        shell: bash
         run: |
           cmake --version
           cmake --workflow action
-      - name: Run gcov to translate `.gcda` files into `.gcov` readable by humans and SonarCloud
+      - name: Convert coverage to .gcov (Linux)
         run: |
           mkdir coverage-dir
           cd coverage-dir
           find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
           cd ..
-      - name: Official SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
+      - name: Download Windows coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-windows
+          path: artifacts/windows
+      - name: Merge coverage (Windows + Linux)
+        run: |
+          cp -R artifacts/windows/*.gcov coverage-dir/ || true
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             --define sonar.cfamily.compile-commands=build/compile_commands.json

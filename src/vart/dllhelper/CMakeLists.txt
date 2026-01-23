@@ -8,7 +8,11 @@ set_target_properties(vart.dllhelper PROPERTIES LINKER_LANGUAGE CXX)
 if(WIN32)
     target_sources(vart.dllhelper PRIVATE dll_helper_win.cpp)
 else()
-    target_sources(vart.dllhelper PRIVATE dll_helper_linux.cpp)
+    #on linux add windows source with ifdefs - for coverage reporting
+    target_sources(
+        vart.dllhelper
+        PRIVATE dll_helper_linux.cpp dll_helper_win.cpp
+    )
 endif()
 
 target_sources(
@@ -34,5 +38,3 @@ if(VART_DLLHELPER_USE_GSL)
         target_compile_definitions(vart.dllhelper PUBLIC WITH_GSL)
     endif()
 endif()
-
-#install(TARGETS vart.dllhelper EXPORT vart_dllhelper-targets FILE_SET HEADERS)

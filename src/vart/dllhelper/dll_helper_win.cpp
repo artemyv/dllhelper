@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <format>
 #include <system_error>
 #include <vart/dllhelper/dllhelper.h>
 
@@ -15,8 +17,8 @@ vart::dll::lib_handle vart::dll::Helper::LoadLibraryInternal(const std::filesyst
                     ::FreeLibrary(hmodule);
                 }};
     }
-    throw std::system_error(std::error_code(::GetLastError(), std::system_category()),
-                            std::format("Failed to load {}", filename.string()));
+    const auto ec = std::error_code(::GetLastError(), std::system_category());
+    throw DllError(std::format("Failed to load {}", filename.string()), ec);
 }
 
 vart::dll::func_handle_internal_t vart::dll::Helper::GetProcAddr(vart::dll::procname_t proc_name) const
@@ -26,8 +28,9 @@ vart::dll::func_handle_internal_t vart::dll::Helper::GetProcAddr(vart::dll::proc
     if (res == nullptr)
     {
         const char* name = proc_name;
-        throw std::system_error(std::error_code(::GetLastError(), std::system_category()),
-                                std::format("Function {} not found", name));
+        const auto  ec   = std::error_code(::GetLastError(), std::system_category());
+        throw DllError(std::format("Function {} not found", name), ec);
     }
     return std::bit_cast<func_handle_internal_t>(res);
 }
+#endif // _WIN32
