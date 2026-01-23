@@ -20,7 +20,7 @@ namespace vart::dll
 class DllError : public std::runtime_error
 {
   public:
-    explicit DllError(std::string message, std::error_code ec = {}) : std::runtime_error(std::move(message)), _ec(ec) {}
+    explicit DllError(const std::string& message, std::error_code ec = {}) : std::runtime_error(message), _ec(ec) {}
 
     [[nodiscard]] const std::error_code& code() const noexcept { return _ec; }
 
@@ -34,7 +34,7 @@ inline std::string getMessage(DllError const& e)
     {
         return std::format("Error: {} ({}), message: {}", e.code().value(), e.code().message(), e.what());
     }
-    catch (const std::exception&)
+    catch (const std::bad_alloc&)
     {
         return e.what();
     }
