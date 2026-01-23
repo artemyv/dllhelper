@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -32,3 +33,4 @@ vart::dll::func_handle_internal_t vart::dll::Helper::GetProcAddr(vart::dll::proc
     }
     return std::bit_cast<func_handle_internal_t>(res);
 }
+#endif // _WIN32
