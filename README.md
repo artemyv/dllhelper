@@ -126,7 +126,7 @@ You can disable building tests by setting CMake option
 
 This project officially supports:
 
-* GCC versions 11–15
+* GCC versions 13–15
 * LLVM Clang++ (with libstdc++ or libc++) versions 17–21
 * AppleClang version 17.0.0 (i.e., the [latest version on GitHub-hosted macOS runners](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md))
 * MSVC version 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))

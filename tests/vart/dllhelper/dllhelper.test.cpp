@@ -45,3 +45,25 @@ TEST(DllHelperTest, ShouldNotCompile2)
     const dll::Fp<decltype(&foo::bar)> func{mockDll["mock_function"]};
 #endif
 }
+
+TEST(DllHelperTest, GetMessage_WithErrorCode)
+{
+    const auto ec = std::make_error_code(std::errc::invalid_argument);
+    const dll::DllError ex{"bad arg", ec};
+
+    const std::string msg = dll::getMessage(ex);
+
+    const auto expected_code = std::to_string(ec.value());
+    EXPECT_NE(msg.find("Error: " + expected_code + " ("), std::string::npos);
+    EXPECT_NE(msg.find("message: bad arg"), std::string::npos);
+}
+
+TEST(DllHelperTest, GetMessage_DefaultErrorCode)
+{
+    const dll::DllError ex{"just a message"};
+
+    const std::string msg = dll::getMessage(ex);
+
+    EXPECT_NE(msg.find("Error: 0 ("), std::string::npos);
+    EXPECT_NE(msg.find("message: just a message"), std::string::npos);
+}
