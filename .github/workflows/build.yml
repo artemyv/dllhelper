@@ -1,5 +1,5 @@
 # Inspired by https://github.com/sonarsource-cfamily-examples/linux-cmake-gcovr-gh-actions-sc/blob/main/.github/workflows/build.yml
-name: Build (Linux + Windows) and Sonar
+name: Build (Windows → Linux merge) and Sonar
 permissions:
   contents: read
 on:
@@ -9,12 +9,43 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build + Coverage (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
+  windows:
+    name: Build + Coverage (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install CMake 4.2.1
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.1'
+          github-api-token: ''
+      - name: Configure + Build + Test (Windows)
+        shell: pwsh
+        run: |
+          cmake --version
+          cmake --workflow action_win
+      - name: Convert coverage to .gcov (Windows via llvm-cov)
+        shell: pwsh
+        run: |
+          $llvm = "llvm-cov.exe"
+          New-Item -ItemType Directory -Path coverage-windows -Force | Out-Null
+          Push-Location coverage-windows
+          Get-ChildItem -Recurse -File .. -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" } | ForEach-Object {
+            & "$llvm" gcov --preserve-paths $_.FullName
+          }
+          Pop-Location
+      - name: Upload coverage artifacts (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-windows
+          path: coverage-windows
+
+  linux:
+    name: Build + Merge Coverage + Sonar (Linux)
+    needs: windows
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,64 +56,29 @@ jobs:
           cmake-version: '4.2.1'
           github-api-token: ''
       - name: Configure + Build + Test (Linux)
-        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           cmake --version
           cmake --workflow action
-          mkdir coverage-ubuntu
-          cd coverage-ubuntu
-          find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
-          cd ..
-      - name: Configure + Build + Test (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          cmake --version
-          cmake --workflow action_win
-          $llvm = "llvm-cov.exe"
-          New-Item -ItemType Directory -Path coverage-windows -Force | Out-Null
-          Push-Location coverage-windows
-          Get-ChildItem -Recurse -File .. -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" } | ForEach-Object {
-            & "$llvm" gcov --preserve-paths $_.FullName
-          }
-          Pop-Location
-      - name: Upload coverage artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.os }}
-          path: coverage-*
-      - name: Upload compile_commands
-        uses: actions/upload-artifact@v4
-        with:
-          name: compile-commands-${{ matrix.os }}
-          path: build/compile_commands.json
-
-  sonar:
-    name: SonarCloud Scan (merged)
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-      - name: Merge coverage
+      - name: Convert coverage to .gcov (Linux)
         run: |
           mkdir coverage-dir
-          cp -R artifacts/coverage-ubuntu-latest/*.gcov coverage-dir/ || true
-          cp -R artifacts/coverage-windows-latest/*.gcov coverage-dir/ || true
-      - name: Use Linux compile_commands.json
+          cd coverage-dir
+          find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
+          cd ..
+      - name: Download Windows coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-windows
+          path: artifacts/windows
+      - name: Merge coverage (Windows + Linux)
         run: |
-          cp artifacts/compile-commands-ubuntu-latest/compile_commands.json merged_compile_commands.json
+          cp -R artifacts/windows/*.gcov coverage-dir/ || true
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            --define sonar.cfamily.compile-commands=merged_compile_commands.json
+            --define sonar.cfamily.compile-commands=build/compile_commands.json
             --define sonar.cfamily.gcov.reportsPath=coverage-dir
