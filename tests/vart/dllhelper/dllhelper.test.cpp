@@ -70,13 +70,15 @@ TEST(DllHelperTest, GetMessage_DefaultErrorCode)
 
 TEST(DllHelperTest, DllError_CodeAccessor)
 {
-    const auto ec = std::make_error_code(std::errc::permission_denied);
-    try
     {
-        throw dll::DllError {"no perms", ec};
-    }
-    catch(const dll::DllError& e)
-    {
-        EXPECT_EQ(e.code(), ec);
+        const auto ec = std::make_error_code(std::errc::permission_denied);
+        try
+        {
+            throw dll::DllError{"no perms", ec};
+        }
+        catch (const dll::DllError& e)
+        {
+            EXPECT_EQ(e.code(), ec);
+        }
     }
 }

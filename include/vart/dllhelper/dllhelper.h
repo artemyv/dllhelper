@@ -8,6 +8,7 @@
 #include <format>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <system_error>
 
 #if defined(WITH_GSL)
@@ -17,10 +18,11 @@
 
 namespace vart::dll
 {
-class DllError : public std::runtime_error // GCOVR_EXCL_LINE LCOV_EXCL_LINE
+class DllError : public std::runtime_error 
 {
   public:
     explicit DllError(const std::string& message, std::error_code ec = {}) : std::runtime_error(message), _ec(ec) {}
+    ~DllError() noexcept override = default;
 
     [[nodiscard]] const std::error_code& code() const noexcept { return _ec; }
 
