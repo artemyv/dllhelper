@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
+#include <bit>
 #include <cerrno>
 #include <dlfcn.h>
+#include <filesystem>
 #include <format>
 #include <system_error>
 #include <vart/dllhelper/dllhelper.h>
