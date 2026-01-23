@@ -26,7 +26,7 @@ if you’re comfortable with its dependency footprint.
 
 Library header depends on the [GSL library](https://github.com/microsoft/GSL.git),
 using `gsl::not_null<void*>` and `gsl::not_null<gsl::czstring>`. This dependency is
-controlled via the CMake option `DLLHELPER_USE_GSL`.
+controlled via the CMake option `VART_DLLHELPER_USE_GSL`.
 
 ### Usage: Windows example calling ShellAboutW function from Shell32.dll
 

@@ -18,7 +18,7 @@ target_sources(
 
 set_target_properties(vart.dllhelper PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
 
-if(DLLHELPER_USE_GSL)
+if(VART_DLLHELPER_USE_GSL)
     find_package(Microsoft.GSL CONFIG QUIET)
     if(Microsoft.GSL_FOUND)
         # Link GSL only for the build tree to avoid exporting

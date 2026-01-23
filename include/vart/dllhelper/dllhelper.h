@@ -13,7 +13,8 @@
 #include <gsl/zstring>
 #endif
 
-namespace dll {
+namespace vart::dll
+{
 struct lib_handle_replacer;
 struct func_handle_replacer;
 using func_handle_internal_t = const func_handle_replacer*;
@@ -25,24 +26,28 @@ using procname_t    = const char*;
 using func_handle_t = func_handle_internal_t;
 #endif
 
-inline const func_handle_replacer* getRawHandle(func_handle_t ptr) noexcept {
+inline const func_handle_replacer* getRawHandle(func_handle_t ptr) noexcept
+{
     const func_handle_replacer* p{ptr};
     return p;
 }
 
 template <typename T>
-concept func = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
+concept func     = std::is_function_v<T> && !std::is_member_function_pointer_v<T>;
 
 using lib_handle = std::shared_ptr<const lib_handle_replacer>;
-template <func T>
-class Fp {
+template <func T> class Fp
+{
   public:
     [[nodiscard]] explicit Fp(lib_handle libptr, func_handle_t ptr) noexcept
-        : _module(libptr), _ptr(std::bit_cast<T*>(getRawHandle(ptr))) {}
+        : _module(libptr), _ptr(std::bit_cast<T*>(getRawHandle(ptr)))
+    {
+    }
 
     template <typename... Args>
         requires(std::is_invocable_v<T, Args...>)
-    auto operator()(Args&&... args) const noexcept(std::is_nothrow_invocable_v<T, Args...>) {
+    auto operator()(Args&&... args) const noexcept(std::is_nothrow_invocable_v<T, Args...>)
+    {
         return std::invoke(_ptr, std::forward<Args>(args)...);
     }
 
@@ -51,20 +56,21 @@ class Fp {
     T*         _ptr;
 };
 
-class Helper {
+class Helper
+{
   public:
     [[nodiscard]] explicit Helper(const std::filesystem::path& filename) : _module(LoadLibraryInternal(filename)) {}
 
     explicit Helper(auto p) = delete; // Prevent implicit conversion from other types
-    class ProcPtr {
+    class ProcPtr
+    {
       public:
         [[nodiscard]] explicit ProcPtr(lib_handle libptr, func_handle_internal_t ptr) noexcept
-            : _module(libptr), _ptr(ptr) {}
-
-        template <func T>
-        [[nodiscard]] explicit operator Fp<T>() const noexcept {
-            return Fp<T>(_module, _ptr);
+            : _module(libptr), _ptr(ptr)
+        {
         }
+
+        template <func T> [[nodiscard]] explicit operator Fp<T>() const noexcept { return Fp<T>(_module, _ptr); }
 
       private:
         lib_handle    _module; // Keep the module handle alive as long as the ProcPtr exists
@@ -77,7 +83,7 @@ class Helper {
     [[nodiscard]] static lib_handle      LoadLibraryInternal(const std::filesystem::path& filename);
     [[nodiscard]] func_handle_internal_t GetProcAddr(procname_t proc_name) const;
 
-    lib_handle _module;
+    lib_handle                           _module;
 };
-} // namespace dll
+} // namespace vart::dll
 #endif // VART_DLLHELPER_DLLHELPER_HPP

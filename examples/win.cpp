@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: MIT
-#include <vart/dllhelper/dllhelper.h>
 #include <Windows.h>
-#include <shellapi.h>
 #include <iostream>
+#include <shellapi.h>
 #include <system_error>
+#include <vart/dllhelper/dllhelper.h>
 
-class shellAbout {
+namespace dll = vart::dll;
+
+class shellAbout
+{
   public:
     void invoke() const { m_shellAbout(nullptr, L"hello", L"world", nullptr); }
 
   private:
-    static dll::Fp<decltype(ShellAboutW)> createFuncPointer() {
+    static dll::Fp<decltype(ShellAboutW)> createFuncPointer()
+    {
         dll::Helper                    a_dll{std::filesystem::path(L"Shell32.dll")};
         dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
         return shellAbout;
@@ -22,34 +26,44 @@ class shellAbout {
     dll::Fp<decltype(ShellAboutW)> m_shellAbout{createFuncPointer()};
 };
 
-int main() {
-    try {
+int main()
+{
+    try
+    {
         shellAbout test;
         test.invoke();
-    } catch (const std::system_error& e) {
+    }
+    catch (const std::system_error& e)
+    {
         std::cerr << "Err #1: " << e.what() << std::endl;
     }
 
     // Error handling examples
     using std::filesystem::path;
 
-    try {
+    try
+    {
         std::cerr << "Going to use wrong dll name: Shell64.dll to demonstrate error handling using exceptions\n";
         dll::Helper                          a_dll{path(L"Shell64.dll")};
         const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
-    } catch (const std::system_error& e) {
+    }
+    catch (const std::system_error& e)
+    {
         std::cerr << "Err #2: " << e.what() << std::endl;
     }
 
-    try {
+    try
+    {
         std::cerr << "Going to use wrong function name: ShellAboutX to demonstrate error handling using exceptions\n";
         dll::Helper                          a_dll{path(L"Shell32.dll")};
         const dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutX"]};
 
         shellAbout(nullptr, L"hello", L"world", nullptr);
-    } catch (const std::system_error& e) {
+    }
+    catch (const std::system_error& e)
+    {
         std::cerr << "Err #3: " << e.what() << std::endl;
     }
 }
