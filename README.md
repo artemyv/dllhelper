@@ -31,31 +31,42 @@ controlled via the CMake option `VART_DLLHELPER_USE_GSL`.
 ### Usage: Windows example calling ShellAboutW function from Shell32.dll
 
 ```c++
-#include <vart/dllhelper/dllhelper.h>
 #include <Windows.h>
-#include <shellapi.h>
 #include <iostream>
+#include <shellapi.h>
 #include <system_error>
+#include <vart/dllhelper/dllhelper.h>
 
-class shellAbout {
+namespace dll = vart::dll;
+
+class shellAbout
+{
   public:
     void invoke() const { m_shellAbout(nullptr, L"hello", L"world", nullptr); }
 
   private:
-    static dll::Fp<decltype(ShellAboutW)> createFuncPointer() {
+    static dll::Fp<decltype(ShellAboutW)> createFuncPointer()
+    {
         dll::Helper                    a_dll{std::filesystem::path(L"Shell32.dll")};
         dll::Fp<decltype(ShellAboutW)> shellAbout{a_dll["ShellAboutW"]};
         return shellAbout;
     }
 
+    // With new approach there is no need to store the dll::Helper object,
+    // as it is not used after the function pointer is created.
+    // The function pointer will keep the module handle alive as long as it is used.
     dll::Fp<decltype(ShellAboutW)> m_shellAbout{createFuncPointer()};
 };
 
-int main() {
-    try {
+int main()
+{
+    try
+    {
         shellAbout test;
         test.invoke();
-    } catch (const std::system_error& e) {
+    }
+    catch (const std::system_error& e)
+    {
         std::cerr << "Err #1: " << e.what() << std::endl;
     }
 }
@@ -66,26 +77,25 @@ See the [win.cpp](examples/win.cpp) file for complete example.
 ### Usage: Linux example calling double std::cos(double) function from libm.so.6
 
 ```c++
-#include <vart/dllhelper/dllhelper.h>
 #include <iostream>
+#include <vart/dllhelper/dllhelper.h>
 
-int main() {
+int main()
+{
     using std::filesystem::path;
-    try {
+    namespace dll = vart::dll;
+    try
+    {
         const dll::Helper             a_dll{path("libm.so.6")};
         const dll::Fp<double(double)> cos_func{a_dll["cos"]};
 
-        constexpr double value  = 0.0;
-        const double     result = cos_func(value);
+        constexpr double              value  = 0.0;
+        const double                  result = cos_func(value);
         std::cout << "cos(" << value << ") = " << result << '\n';
-    } catch (const std::invalid_argument& ex) {
-        std::cerr << "Err #1: " << ex.what() << '\n';
     }
-
-    try {
-        const dll::Helper a_dll{path("libm.so.125")};
-    } catch (const std::invalid_argument& ex) {
-        std::cerr << "Err #2: " << ex.what() << '\n';
+    catch (const std::invalid_argument& ex)
+    {
+        std::cerr << "Err #1: " << ex.what() << '\n';
     }
 }
 ```
