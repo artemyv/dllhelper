@@ -67,3 +67,16 @@ TEST(DllHelperTest, GetMessage_DefaultErrorCode)
     EXPECT_NE(msg.find("Error: 0 ("), std::string::npos);
     EXPECT_NE(msg.find("message: just a message"), std::string::npos);
 }
+
+TEST(DllHelperTest, DllError_CodeAccessor)
+{
+    const auto ec = std::make_error_code(std::errc::permission_denied);
+    try
+    {
+        throw dll::DllError {"no perms", ec};
+    }
+    catch(const dll::DllError& e)
+    {
+        EXPECT_EQ(e.code(), ec);
+    }
+}
