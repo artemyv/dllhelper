@@ -264,6 +264,11 @@
       "configurePreset": "action"
     },
     {
+      "name": "action_win",
+      "inherits": "_test_base",
+      "configurePreset": "action_win"
+    },
+    {
       "name": "appleclang-debug",
       "inherits": "_test_base",
       "configurePreset": "appleclang-debug"
@@ -379,6 +384,10 @@
         },
         {
           "type": "build",
+          "name": "action_win"
+        },
+        {
+          "type": "test",
           "name": "action_win"
         }
       ]
