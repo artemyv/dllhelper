@@ -9,7 +9,10 @@ if(WIN32)
     target_sources(vart.dllhelper PRIVATE dll_helper_win.cpp)
 else()
     #on linux add windows source with ifdefs - for coverage reporting
-    target_sources(vart.dllhelper PRIVATE dll_helper_linux.cpp dll_helper_win.cpp)
+    target_sources(
+        vart.dllhelper
+        PRIVATE dll_helper_linux.cpp dll_helper_win.cpp
+    )
 endif()
 
 target_sources(
