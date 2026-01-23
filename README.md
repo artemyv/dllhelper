@@ -33,7 +33,6 @@ controlled via the CMake option `VART_DLLHELPER_USE_GSL`.
 #include <Windows.h>
 #include <iostream>
 #include <shellapi.h>
-#include <system_error>
 #include <vart/dllhelper/dllhelper.h>
 
 namespace dll = vart::dll;
@@ -77,7 +76,9 @@ See the [win.cpp](examples/win.cpp) file for complete example.
 ### Usage: Linux example calling double std::cos(double) function from libm.so.6
 
 ```c++
+#include <filesystem>
 #include <iostream>
+#include <string>
 #include <vart/dllhelper/dllhelper.h>
 
 int main()
