@@ -1,42 +1,94 @@
 # Inspired by https://github.com/sonarsource-cfamily-examples/linux-cmake-gcovr-gh-actions-sc/blob/main/.github/workflows/build.yml
-name: Build on Linux
+name: Build (Linux + Windows) and Sonar
 permissions:
   contents: read
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
-    name: Build
+    name: Build + Coverage (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install CMake 4.2.1
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.1'
+          github-api-token: ''
+      - name: Configure + Build + Test
+        shell: bash
+        run: |
+          cmake --version
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            cmake --workflow action
+          else
+            cmake --workflow action_win
+          fi
+      - name: Convert coverage to .gcov (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir coverage-ubuntu
+          cd coverage-ubuntu
+          find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
+          cd ..
+      - name: Convert coverage to .gcov (Windows via llvm-cov)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          choco install llvm -y || true
+          mkdir coverage-windows
+          cd coverage-windows
+          # Use llvm-cov in gcov-compatible mode to emit .gcov
+          find .. -name '*.obj' -not -path '*/_deps/*' -printf '%p\n' | xargs -I{} llvm-cov gcov --preserve-paths {}
+          cd ..
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}
+          path: coverage-*
+      - name: Upload compile_commands
+        uses: actions/upload-artifact@v4
+        with:
+          name: compile-commands-${{ matrix.os }}
+          path: build/compile_commands.json
+
+  sonar:
+    name: SonarCloud Scan (merged)
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Install CMake 4.2.1
-        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
+          fetch-depth: 0
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
         with:
-          cmake-version: '4.2.1'
-          # Explicitly disable auth to avoid "Bad credentials" from fork PRs
-          github-api-token: ''
-      - name: Run Build
-        run: |
-          cmake --version
-          cmake --workflow action
-      - name: Run gcov to translate `.gcda` files into `.gcov` readable by humans and SonarCloud
+          path: artifacts
+      - name: Merge coverage
         run: |
           mkdir coverage-dir
-          cd coverage-dir
-          find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
-          cd ..
-      - name: Official SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
+          cp -R artifacts/coverage-ubuntu-latest/*.gcov coverage-dir/ || true
+          cp -R artifacts/coverage-windows-latest/*.gcov coverage-dir/ || true
+      - name: Merge compile_commands.json
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          jq -s 'add' artifacts/compile-commands-ubuntu-latest/compile_commands.json \
+                      artifacts/compile-commands-windows-latest/compile_commands.json \
+              > merged_compile_commands.json
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            --define sonar.cfamily.compile-commands=build/compile_commands.json
+            --define sonar.cfamily.compile-commands=merged_compile_commands.json
             --define sonar.cfamily.gcov.reportsPath=coverage-dir

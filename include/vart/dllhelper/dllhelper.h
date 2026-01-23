@@ -18,7 +18,7 @@
 
 namespace vart::dll
 {
-class DllError : public std::runtime_error 
+class DllError : public std::runtime_error
 {
   public:
     explicit DllError(const std::string& message, std::error_code ec = {}) : std::runtime_error(message), _ec(ec) {}
