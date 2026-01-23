@@ -29,12 +29,12 @@ jobs:
       - name: Convert coverage to .gcov (Windows via llvm-cov)
         shell: pwsh
         run: |
-          $llvm = "llvm-cov.exe"
+          $llvmCov = "llvm-cov.exe"
           New-Item -ItemType Directory -Path coverage-windows -Force | Out-Null
           Push-Location coverage-windows
-          Get-ChildItem -Recurse -File .. -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" } | ForEach-Object {
-            & "$llvm" gcov --preserve-paths $_.FullName
-          }
+          $objs = Get-ChildItem ..\build -Recurse -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" -and $_.FullName -notmatch "CompilerId" }
+          if ($objs.Count -eq 0) { Write-Host "No object files found for coverage"; Pop-Location; exit 0 }
+          & $llvmCov gcov -l ($objs | ForEach-Object { $_.FullName })
           Pop-Location
       - name: Upload coverage artifacts (Windows)
         uses: actions/upload-artifact@v4
