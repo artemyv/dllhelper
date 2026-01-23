@@ -24,32 +24,29 @@ jobs:
         with:
           cmake-version: '4.2.1'
           github-api-token: ''
-      - name: Configure + Build + Test
+      - name: Configure + Build + Test (Linux)
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           cmake --version
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            cmake --workflow action
-          else
-            cmake --workflow action_win
-          fi
-      - name: Convert coverage to .gcov (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
+          cmake --workflow action
           mkdir coverage-ubuntu
           cd coverage-ubuntu
           find .. -name '*.o' -not -path '*/_deps/*' | xargs gcov --preserve-paths
           cd ..
-      - name: Convert coverage to .gcov (Windows via llvm-cov)
+      - name: Configure + Build + Test (Windows)
         if: matrix.os == 'windows-latest'
-        shell: bash
+        shell: pwsh
         run: |
-          choco install llvm -y || true
-          mkdir coverage-windows
-          cd coverage-windows
-          # Use llvm-cov in gcov-compatible mode to emit .gcov
-          find .. -name '*.obj' -not -path '*/_deps/*' -printf '%p\n' | xargs -I{} llvm-cov gcov --preserve-paths {}
-          cd ..
+          cmake --version
+          cmake --workflow action_win
+          $llvm = "llvm-cov.exe"
+          New-Item -ItemType Directory -Path coverage-windows -Force | Out-Null
+          Push-Location coverage-windows
+          Get-ChildItem -Recurse -File .. -Include *.obj | Where-Object { $_.FullName -notmatch "\\_deps\\" } | ForEach-Object {
+            & "$llvm" gcov --preserve-paths $_.FullName
+          }
+          Pop-Location
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -78,12 +75,9 @@ jobs:
           mkdir coverage-dir
           cp -R artifacts/coverage-ubuntu-latest/*.gcov coverage-dir/ || true
           cp -R artifacts/coverage-windows-latest/*.gcov coverage-dir/ || true
-      - name: Merge compile_commands.json
+      - name: Use Linux compile_commands.json
         run: |
-          sudo apt-get update && sudo apt-get install -y jq
-          jq -s 'add' artifacts/compile-commands-ubuntu-latest/compile_commands.json \
-                      artifacts/compile-commands-windows-latest/compile_commands.json \
-              > merged_compile_commands.json
+          cp artifacts/compile-commands-ubuntu-latest/compile_commands.json merged_compile_commands.json
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v7
         env:
