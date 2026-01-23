@@ -13,9 +13,7 @@
 #include <gsl/zstring>
 #endif
 
-namespace vart
-{
-namespace dll
+namespace vart::dll
 {
 struct lib_handle_replacer;
 struct func_handle_replacer;
@@ -87,6 +85,5 @@ class Helper
 
     lib_handle                           _module;
 };
-} // namespace dll
-} // namespace vart
+} // namespace vart::dll
 #endif // VART_DLLHELPER_DLLHELPER_HPP
