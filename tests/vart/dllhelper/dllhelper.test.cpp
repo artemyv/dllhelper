@@ -16,14 +16,12 @@ TEST(DllHelperTest, MissingMethod)
 {
     const dll::Helper mockDll(path(MOCK_DLL_PATH));
     using fp = int();
-    EXPECT_THROW({ [[maybe_unused]] const dll::Fp<fp> func{mockDll["mock_not_function"]}; }, std::exception);
+    EXPECT_THROW({ [[maybe_unused]] const dll::Fp<fp> func{mockDll["mock_not_function"]}; }, dll::DllError);
 }
 
 TEST(DllHelperTest, MissingLib)
 {
-    EXPECT_THROW(
-        { const dll::Helper mockDll(path("failure")); },
-        std::exception); // todo make win and linux implementation to throw same type of custom made exception
+    EXPECT_THROW({ const dll::Helper mockDll(path("failure")); }, dll::DllError);
 }
 
 TEST(DllHelperTest, ShouldNotCompile)

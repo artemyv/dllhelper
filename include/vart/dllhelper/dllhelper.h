@@ -5,8 +5,10 @@
 #include <bit>
 #include <concepts>
 #include <filesystem>
+#include <format>
 #include <functional>
 #include <memory>
+#include <system_error>
 
 #if defined(WITH_GSL)
 #include <gsl/pointers> // for gsl::not_null
@@ -15,6 +17,29 @@
 
 namespace vart::dll
 {
+class DllError : public std::runtime_error
+{
+  public:
+    explicit DllError(std::string message, std::error_code ec = {}) : std::runtime_error(std::move(message)), _ec(ec) {}
+
+    [[nodiscard]] const std::error_code& code() const noexcept { return _ec; }
+
+  private:
+    std::error_code _ec;
+};
+
+inline std::string getMessage(DllError const& e)
+{
+    try
+    {
+        return std::format("Error: {} ({}), message: {}", e.code().value(), e.code().message(), e.what());
+    }
+    catch (const std::exception&)
+    {
+        return e.what();
+    }
+}
+
 struct lib_handle_replacer;
 struct func_handle_replacer;
 using func_handle_internal_t = const func_handle_replacer*;

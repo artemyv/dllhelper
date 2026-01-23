@@ -34,5 +34,3 @@ if(VART_DLLHELPER_USE_GSL)
         target_compile_definitions(vart.dllhelper PUBLIC WITH_GSL)
     endif()
 endif()
-
-#install(TARGETS vart.dllhelper EXPORT vart_dllhelper-targets FILE_SET HEADERS)
