@@ -5,6 +5,8 @@
 #include <system_error>
 #include <vart/dllhelper/dllhelper.h>
 
+namespace dll = vart::dll;
+
 class shellAbout
 {
   public:

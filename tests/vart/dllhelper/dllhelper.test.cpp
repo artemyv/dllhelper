@@ -3,6 +3,7 @@
 #include <vart/dllhelper/dllhelper.h>
 
 using std::filesystem::path;
+namespace dll = vart::dll;
 TEST(DllHelperTest, Positive)
 {
     const dll::Helper mockDll(path(MOCK_DLL_PATH));

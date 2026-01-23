@@ -5,6 +5,7 @@
 int main()
 {
     using std::filesystem::path;
+    namespace dll = vart::dll;
     try
     {
         const dll::Helper             a_dll{path("libm.so.6")};

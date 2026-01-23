@@ -5,7 +5,7 @@
 #include <system_error>
 #include <vart/dllhelper/dllhelper.h>
 
-dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
+vart::dll::lib_handle vart::dll::Helper::LoadLibraryInternal(const std::filesystem::path& filename)
 {
     static constexpr DWORD dwFlags = LOAD_LIBRARY_SEARCH_SYSTEM32;
     if (const auto result = LoadLibraryExW(filename.c_str(), nullptr, dwFlags); result != nullptr)
@@ -19,7 +19,7 @@ dll::lib_handle dll::Helper::LoadLibraryInternal(const std::filesystem::path& fi
                             std::format("Failed to load {}", filename.string()));
 }
 
-dll::func_handle_internal_t dll::Helper::GetProcAddr(dll::procname_t proc_name) const
+vart::dll::func_handle_internal_t vart::dll::Helper::GetProcAddr(vart::dll::procname_t proc_name) const
 {
 
     const auto res = GetProcAddress(std::bit_cast<HMODULE>(_module.get()), proc_name);
