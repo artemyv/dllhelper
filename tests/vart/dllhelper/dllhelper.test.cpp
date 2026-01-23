@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
+#include <filesystem>
+#include <string>
 #include <gtest/gtest.h>
+#include <system_error>
 #include <vart/dllhelper/dllhelper.h>
 
 using std::filesystem::path;

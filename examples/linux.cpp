@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
+#include <filesystem>
 #include <iostream>
+#include <string>
 #include <vart/dllhelper/dllhelper.h>
 
 int main()
