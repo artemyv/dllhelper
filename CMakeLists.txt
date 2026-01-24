@@ -33,11 +33,22 @@ if(
 )
     set(_dllhelper_badalloc_default OFF)
 endif()
-
+if(
+    DEFINED BEMAN_BUILDSYS_SANITIZER
+    AND BEMAN_BUILDSYS_SANITIZER STREQUAL "TsSan"
+)
+    set(_dllhelper_badalloc_default OFF)
+endif()
 # Project-specific sanitizer selection
 if(
     DEFINED DLLHELPER_BUILDSYS_SANITIZER
     AND DLLHELPER_BUILDSYS_SANITIZER STREQUAL "MaxSan"
+)
+    set(_dllhelper_badalloc_default OFF)
+endif()
+if(
+    DEFINED DLLHELPER_BUILDSYS_SANITIZER
+    AND DLLHELPER_BUILDSYS_SANITIZER STREQUAL "TsSan"
 )
     set(_dllhelper_badalloc_default OFF)
 endif()
