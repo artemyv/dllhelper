@@ -23,6 +23,30 @@ option(
 )
 
 option(VART_DLLHELPER_USE_GSL "Use GSL library" ON)
+# Default bad-alloc test toggle depends on sanitizer usage
+set(_dllhelper_badalloc_default ON)
+
+# Respect external build system sanitizer knobs
+if(
+    DEFINED BEMAN_BUILDSYS_SANITIZER
+    AND BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan"
+)
+    set(_dllhelper_badalloc_default OFF)
+endif()
+
+# Project-specific sanitizer selection
+if(
+    DEFINED DLLHELPER_BUILDSYS_SANITIZER
+    AND DLLHELPER_BUILDSYS_SANITIZER STREQUAL "MaxSan"
+)
+    set(_dllhelper_badalloc_default OFF)
+endif()
+
+option(
+    VART_DLLHELPER_TEST_BADALLOC
+    "Build bad-alloc test target that overrides global new/delete. Default depends on sanitizer flags."
+    ${_dllhelper_badalloc_default}
+)
 
 add_subdirectory("src/vart/dllhelper")
 add_subdirectory("include/vart/dllhelper")

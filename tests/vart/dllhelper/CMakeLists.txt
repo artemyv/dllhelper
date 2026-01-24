@@ -28,14 +28,16 @@ target_compile_definitions(
     PRIVATE MOCK_DLL_PATH="$<TARGET_FILE:vart.dllhelper.tests.mock_dll>"
 )
 
-# Separate test target for getMessage bad_alloc scenario
-add_executable(vart.dllhelper.tests.getmessage_badalloc)
-target_sources(
-    vart.dllhelper.tests.getmessage_badalloc
-    PRIVATE getmessage_badalloc.test.cpp
-)
-target_link_libraries(
-    vart.dllhelper.tests.getmessage_badalloc
-    PRIVATE vart::dllhelper GTest::gtest_main
-)
-gtest_discover_tests(vart.dllhelper.tests.getmessage_badalloc)
+# Separate test target for getMessage bad_alloc scenario (opt-in)
+if(VART_DLLHELPER_TEST_BADALLOC)
+    add_executable(vart.dllhelper.tests.getmessage_badalloc)
+    target_sources(
+        vart.dllhelper.tests.getmessage_badalloc
+        PRIVATE getmessage_badalloc.test.cpp
+    )
+    target_link_libraries(
+        vart.dllhelper.tests.getmessage_badalloc
+        PRIVATE vart::dllhelper GTest::gtest_main
+    )
+    gtest_discover_tests(vart.dllhelper.tests.getmessage_badalloc)
+endif()
