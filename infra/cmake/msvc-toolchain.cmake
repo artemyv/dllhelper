@@ -28,6 +28,13 @@ if(DLLHELPER_BUILDSYS_SANITIZER STREQUAL "MaxSan")
     set(SANITIZER_FLAGS "/fsanitize=address /Zi")
 endif()
 
+#ci tests are configured using BEMAN_BUILDSYS_SANITIZER
+if(BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan")
+    # /Zi flag (add debug symbol) is needed when using address sanitizer
+    # See C5072: https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-c5072
+    set(SANITIZER_FLAGS "/fsanitize=address /Zi")
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "/W4 /EHsc /permissive- ${SANITIZER_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG_INIT "/W4 /EHsc /permissive- ${SANITIZER_FLAGS}")
 

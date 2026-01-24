@@ -20,11 +20,20 @@ include_guard(GLOBAL)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 
-if(BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan")
+if(DLLHELPER_BUILDSYS_SANITIZER STREQUAL "MaxSan")
     set(SANITIZER_FLAGS
         "-fsanitize=address -fsanitize=leak -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-undefined-trap-on-error"
     )
 elseif(DLLHELPER_BUILDSYS_SANITIZER STREQUAL "TSan")
+    set(SANITIZER_FLAGS "-fsanitize=thread")
+endif()
+
+#ci tests are configured using BEMAN_BUILDSYS_SANITIZER
+if(BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan")
+    set(SANITIZER_FLAGS
+        "-fsanitize=address -fsanitize=leak -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-undefined-trap-on-error"
+    )
+elseif(BEMAN_BUILDSYS_SANITIZER STREQUAL "TSan")
     set(SANITIZER_FLAGS "-fsanitize=thread")
 endif()
 

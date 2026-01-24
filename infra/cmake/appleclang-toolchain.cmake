@@ -31,6 +31,15 @@ elseif(DLLHELPER_BUILDSYS_SANITIZER STREQUAL "TSan")
     set(SANITIZER_FLAGS "-fsanitize=thread")
 endif()
 
+#ci tests are configured using BEMAN_BUILDSYS_SANITIZER
+if(BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan")
+    set(SANITIZER_FLAGS
+        "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined"
+    )
+elseif(BEMAN_BUILDSYS_SANITIZER STREQUAL "TSan")
+    set(SANITIZER_FLAGS "-fsanitize=thread")
+endif()
+
 set(CMAKE_C_FLAGS_DEBUG_INIT "${SANITIZER_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "${SANITIZER_FLAGS}")
 

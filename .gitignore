@@ -5,3 +5,5 @@
 /coverage-dir
 cobertura.xml
 *.log
+/coverage.json
+/gcovr.cfg
