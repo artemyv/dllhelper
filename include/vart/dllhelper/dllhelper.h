@@ -22,7 +22,6 @@ class DllError : public std::runtime_error
 {
   public:
     explicit DllError(const std::string& message, std::error_code ec = {}) : std::runtime_error(message), _ec(ec) {}
-    ~DllError() noexcept override = default;
 
     [[nodiscard]] const std::error_code& code() const noexcept { return _ec; }
 
