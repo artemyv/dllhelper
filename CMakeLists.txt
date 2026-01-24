@@ -35,7 +35,7 @@ if(
 endif()
 if(
     DEFINED BEMAN_BUILDSYS_SANITIZER
-    AND BEMAN_BUILDSYS_SANITIZER STREQUAL "TsSan"
+    AND BEMAN_BUILDSYS_SANITIZER STREQUAL "TSan"
 )
     set(_dllhelper_badalloc_default OFF)
 endif()
@@ -48,7 +48,7 @@ if(
 endif()
 if(
     DEFINED DLLHELPER_BUILDSYS_SANITIZER
-    AND DLLHELPER_BUILDSYS_SANITIZER STREQUAL "TsSan"
+    AND DLLHELPER_BUILDSYS_SANITIZER STREQUAL "TSan"
 )
     set(_dllhelper_badalloc_default OFF)
 endif()
